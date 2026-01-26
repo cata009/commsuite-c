@@ -1,0 +1,607 @@
+import { useState, useRef, useEffect } from 'react';
+import { MoreVertical, Send, Bold, Italic, Underline, Strikethrough, List, ListOrdered, Link2, Paperclip, Clipboard, Palette, Highlighter, PenTool, ChevronDown } from 'lucide-react';
+import { ParticipantsIcon, TodoIcon } from './NavIcons';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import * as Popover from '@radix-ui/react-popover';
+import { conversationsData, ConversationMessage, ConversationItem, isSystemMessage, MAX_TODO_MESSAGES } from '../data/conversationsData';
+import { SystemMessageBubble } from './SystemMessageBubble';
+import { TodoMessagesSection } from './TodoMessageCard';
+import { mockMessages } from '../data/messagesData';
+import { highlightText, formatTimestamp } from '../utils/searchUtils';
+import { CustomTooltip } from './CustomTooltip';
+import { MESSAGE_STYLES } from '../constants';
+import { CompanyDisplayHeader } from './CompanyDisplay';
+
+function CompanyMemberIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
+      <path fillRule="evenodd" clipRule="evenodd" d="M9.56508 3.0321C9.56508 4.18885 8.62725 5.12672 7.47047 5.12672C6.31373 5.12672 5.37586 4.18885 5.37586 3.0321C5.37586 1.87536 6.31373 0.9375 7.47047 0.9375C8.62725 0.9375 9.56508 1.87536 9.56508 3.0321ZM5.47219 7.68216L7.47459 12.5332C7.48908 12.5644 7.51214 12.5908 7.54111 12.6092C7.57003 12.6277 7.60364 12.6375 7.638 12.6375C7.67231 12.6375 7.70597 12.6277 7.73489 12.6092C7.76386 12.5908 7.78692 12.5644 7.80136 12.5332L9.79964 7.68216C9.86287 7.52644 9.89555 7.36008 9.89597 7.19203V5.96456H11.6597V10.7408C11.6597 12.4988 10.1589 13.9241 8.3078 13.9241H3.28125V9.14789C3.28125 7.81195 4.14756 6.66816 5.37581 6.19594V7.19203C5.37623 7.36008 5.40895 7.52644 5.47219 7.68216ZM7.71764 7.26323L8.33344 7.79944C8.34825 7.81125 8.35955 7.82681 8.36616 7.84453C8.37281 7.8622 8.37455 7.88137 8.37117 7.89998L7.69669 11.8965C7.69312 11.9099 7.68525 11.9217 7.67428 11.9302C7.66331 11.9386 7.64981 11.9432 7.63594 11.9432C7.62211 11.9432 7.60861 11.9386 7.59764 11.9302C7.58662 11.9217 7.57875 11.9099 7.57523 11.8965L6.90075 7.89998C6.89822 7.88142 6.90033 7.86248 6.90689 7.84495C6.9135 7.82742 6.92433 7.81177 6.93844 7.79944L7.55845 7.26323C7.57561 7.24683 7.58695 7.22527 7.59075 7.20178C7.59455 7.17834 7.59052 7.15434 7.57941 7.13334L6.89236 5.94361H8.38373L7.69669 7.13334C7.68483 7.15416 7.68042 7.17834 7.68422 7.20197C7.68806 7.22559 7.69983 7.2472 7.71764 7.26323Z" fill="#262626" />
+    </svg>
+  );
+}
+
+function BankMemberIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
+      <path fillRule="evenodd" clipRule="evenodd" d="M8.4375 3.04688C8.4375 2.52938 8.0175 2.10938 7.5 2.10938C6.9825 2.10938 6.5625 2.52938 6.5625 3.04688C6.5625 3.56437 6.9825 3.98438 7.5 3.98438C8.0175 3.98438 8.4375 3.56437 8.4375 3.04688ZM2.34375 5.39062H1.875C0.839531 5.39062 0 4.55109 0 3.51562L7.5 0.234375L15 3.51562C15 4.55109 14.1605 5.39062 13.125 5.39062H12.6562V11.9531H10.7812V5.39062H8.4375V11.9531H6.5625V5.39062H4.21875V11.9531H2.34375V5.39062ZM10.7812 12.8906H12.6562H13.125H14.5312V14.7656H0.46875V12.8906H1.875H2.34375H4.21875H6.5625H8.4375H10.7812Z" fill="#262626" />
+    </svg>
+  );
+}
+
+function OrganizationIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#262626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 21h18" />
+      <path d="M5 21V7l8-4 8 4v14" />
+      <path d="M17 21v-8.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5V21" />
+    </svg>
+  );
+}
+
+function EditIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path fillRule="evenodd" clipRule="evenodd" d="M13.054 1.57713C12.2725 0.805556 11.0096 0.80804 10.2311 1.5821L9.70308 2.10626L13.559 5.91148L15.5 3.99024L13.054 1.57713ZM0.5 15L5.32344 14.0481L1.46499 10.2404L0.5 15ZM6.31402 13.0758L2.47557 9.28794L8.71099 3.08303L12.5569 6.86689L6.31402 13.0758Z" fill="#007A91" />
+    </svg>
+  );
+}
+
+interface ConversationPanelProps {
+  messageId: string | null;
+  searchQuery?: string;
+  isUnread?: boolean;
+  onToggleReadStatus?: () => void;
+  onTodoStatusChange?: (id: string, hasTodo: boolean) => void;
+}
+
+export function ConversationPanel({ messageId, searchQuery, isUnread, onToggleReadStatus, onTodoStatusChange }: ConversationPanelProps) {
+  const [newMessage, setNewMessage] = useState('');
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Local state for messages to allow adding new ones
+  const [conversationMessages, setConversationMessages] = useState<ConversationItem[]>([]);
+  const [showEmptyMessageError, setShowEmptyMessageError] = useState(false);
+  const [isComposerFocused, setIsComposerFocused] = useState(false);
+
+  // Rich text formatting states
+  const [fontSize, setFontSize] = useState('14');
+  const [textColor, setTextColor] = useState('#000000');
+  const [isBold, setIsBold] = useState(false);
+  const [isItalic, setIsItalic] = useState(false);
+  const [isUnderline, setIsUnderline] = useState(false);
+  const [isStrikethrough, setIsStrikethrough] = useState(false);
+  const [highlightColor, setHighlightColor] = useState('#ffff00');
+
+  const conversation = messageId ? conversationsData[messageId] : null;
+
+  // Initialize messages from data when messageId changes
+  useEffect(() => {
+    if (conversation) {
+      setConversationMessages(conversation.messages);
+    }
+  }, [messageId, conversation]);
+
+  // Auto-scroll to bottom when new messages are added
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+  }, [conversationMessages]);
+
+  // Formatting handlers
+  useEffect(() => {
+    // Use HTML tags (<b>, <font>) for easier global CSS mapping
+    document.execCommand('styleWithCSS', false, 'false');
+  }, []);
+
+  const execCommand = (command: string, value: string = '') => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+
+    // Standardize commands
+    const finalCmd = command === 'hiliteColor' ? (
+      document.queryCommandSupported('hiliteColor') ? 'hiliteColor' : 'backColor'
+    ) : command;
+
+    document.execCommand(finalCmd, false, value);
+
+    // Update local state and reflect in editor
+    if (editorRef.current) {
+      setNewMessage(editorRef.current.innerHTML);
+    }
+  };
+
+  const applyActiveStyles = () => {
+    if (isBold) document.execCommand('bold', false);
+    if (isItalic) document.execCommand('italic', false);
+    if (isUnderline) document.execCommand('underline', false);
+    if (isStrikethrough) document.execCommand('strikeThrough', false);
+
+    if (textColor !== '#000000') document.execCommand('foreColor', false, textColor);
+
+    const sizeMap: Record<string, string> = { '14': '1', '16': '2', '18': '3', '20': '4' };
+    if (fontSize !== '14') {
+      document.execCommand('fontSize', false, sizeMap[fontSize] || '1');
+    }
+  };
+
+  // Check if any participant matches the search query
+  const hasParticipantMatch = searchQuery?.trim() ? conversation?.participantsList?.some(p =>
+    p.toLowerCase().includes(searchQuery.toLowerCase())
+  ) : false;
+
+  const handleSendMessage = () => {
+    const content = editorRef.current?.innerHTML || '';
+    if (content.trim() && content !== '<br>' && content !== '<div><br></div>') {
+      const newMessageObj: ConversationMessage = {
+        id: `msg-${Date.now()}`,
+        sender: 'You',
+        content: content,
+        timestamp: formatTimestamp(),
+        isOwn: true
+      };
+
+      setConversationMessages([...conversationMessages, newMessageObj]);
+      if (editorRef.current) {
+        editorRef.current.innerHTML = '';
+        setNewMessage('');
+
+        setTimeout(() => {
+          editorRef.current?.focus();
+          applyActiveStyles();
+        }, 0);
+      }
+      setShowEmptyMessageError(false);
+    } else {
+      setShowEmptyMessageError(true);
+      setTimeout(() => setShowEmptyMessageError(false), 3000);
+    }
+  };
+
+  const handleInput = () => {
+    if (editorRef.current) {
+      setNewMessage(editorRef.current.innerHTML);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  if (!conversation) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-white text-[#666]">
+        <p className="text-lg">Select a conversation to view messages</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex-1 bg-white flex flex-col min-w-0">
+      {/* Top Header Wrapper - Includes Title, Info and Todo Section */}
+      <div className="border-b border-[#e6e6e6] flex flex-col">
+        {/* Main Header Row */}
+        <div className="px-6 py-4 flex items-center justify-between">
+          <div className="flex-1 min-w-0 pr-4">
+            <CustomTooltip content={conversation.title} side="bottom" align="start">
+              <h2 className="text-xl font-bold text-[#262626] truncate">{conversation.title}</h2>
+            </CustomTooltip>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-[#666]">
+              Updated: {conversation.lastUpdated}
+            </span>
+
+            <Popover.Root>
+              <Popover.Trigger asChild>
+                <button
+                  className={`flex items-center gap-1 px-4 py-1.5 border rounded-[4px] transition-colors group outline-none ${hasParticipantMatch
+                    ? 'bg-[#e7f8fb] text-[#007a91] border-[#007a91]'
+                    : 'border-[#262626] bg-[#f5f5f5] hover:bg-gray-200 data-[state=open]:bg-[#f5f5f5] data-[state=open]:text-[#007a91] data-[state=open]:border-[#007a91]'
+                    }`}
+                >
+                  <ParticipantsIcon className={hasParticipantMatch ? 'text-[#007a91]' : 'group-data-[state=open]:text-[#007a91] text-[#262626]'} />
+                  <span className={`text-sm font-bold ${hasParticipantMatch ? 'text-[#007a91]' : 'group-data-[state=open]:text-[#007a91] text-[#262626]'}`}>{(conversation.participantsList || []).length}</span>
+                </button>
+              </Popover.Trigger>
+              <Popover.Portal>
+                <Popover.Content
+                  className="bg-white rounded-[4px] border border-[#262626] shadow-lg w-[240px] z-50 p-3 flex flex-col items-center animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
+                  sideOffset={5}
+                  align="end"
+                >
+                  {/* Organization Header */}
+                  <div className="flex items-center gap-2 mb-4 w-full justify-center">
+                    <CompanyDisplayHeader
+                      companies={mockMessages.find((m: any) => m.id === messageId)?.companies || []}
+                      fallbackTitle={conversation.title}
+                    />
+                  </div>
+
+                  {/* Participants List */}
+                  <div className="flex flex-col gap-2 w-full max-h-[216px] overflow-y-auto pr-1 hover-scrollbar">
+                    {[...(conversation.participantsList || [])]
+                      .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+                      .map((participant, index) => {
+                        const isBankMember = participant.toLowerCase().includes('unicredit') ||
+                          participant.toLowerCase().includes('wilson thomas') ||
+                          participant.toLowerCase().includes('rossi mario') ||
+                          (participant.length % 5 === 0 && !participant.includes('(You)'));
+
+                        return (
+                          <div key={index} className="flex items-center gap-2.5 w-full bg-[#f5f5f5] hover:bg-[#ebebeb] rounded py-1.5 px-3 transition-colors cursor-default">
+                            <div className="shrink-0 flex items-center justify-center w-5 h-5">
+                              {isBankMember ? <BankMemberIcon /> : <CompanyMemberIcon />}
+                            </div>
+                            <CustomTooltip content={participant} side="top" align="start">
+                              <span className="text-[#262626] font-bold text-sm uppercase truncate flex-1 block">
+                                {highlightText(participant, searchQuery)}
+                              </span>
+                            </CustomTooltip>
+                          </div>
+                        );
+                      })}
+                  </div>
+
+                  {/* Edit Members Action */}
+                  <button
+                    className="flex items-center gap-2 mt-4 hover:opacity-80 transition-opacity"
+                    onClick={() => console.log('Edit members clicked')}
+                  >
+                    <EditIcon />
+                    <span className="text-[#007a91] font-bold text-base uppercase">EDIT MEMBERS</span>
+                  </button>
+
+                </Popover.Content>
+              </Popover.Portal>
+            </Popover.Root>
+
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button className="p-2 hover:bg-gray-100 rounded-md transition-colors">
+                  <MoreVertical size={20} className="text-[#262626]" />
+                </button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  className="bg-white rounded-md shadow-lg border border-[#e6e6e6] p-1 min-w-[150px] z-50"
+                  align="end"
+                  sideOffset={5}
+                >
+                  {/* Mark as read/unread toggle */}
+                  <DropdownMenu.Item
+                    className="cursor-pointer outline-none hover:bg-gray-50 w-full"
+                    style={{ display: 'flex', padding: '12px', alignItems: 'flex-start', gap: '4px' }}
+                    onSelect={() => onToggleReadStatus?.()}
+                  >
+                    <div className="w-4 h-4 flex-shrink-0">
+                      {isUnread ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                          <path fillRule="evenodd" clipRule="evenodd" d="M13.5625 3.76108C12.6664 2.82964 11.2141 2.82964 10.3181 3.76108L6.22952 8.00209L4.11943 5.81907C3.22338 4.88804 1.77066 4.88804 0.875 5.81907L6.22952 11.375L13.5625 3.76108Z" fill="#262626" />
+                        </svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                          <path fillRule="evenodd" clipRule="evenodd" d="M0 3.936V3H16V3.936L8 9.433L0 3.936ZM0 5.2705L8 10.7675L16 5.271V10.3335C16 11.806 14.806 13 13.3335 13H0V5.2705Z" fill="#262626" />
+                        </svg>
+                      )}
+                    </div>
+                    <span
+                      className="text-[#262626] uppercase"
+                      style={{
+                        fontFamily: 'UniCredit, sans-serif',
+                        fontSize: '14px',
+                        fontStyle: 'normal',
+                        fontWeight: 700,
+                        lineHeight: 'normal',
+                        fontFeatureSettings: "'liga' off, 'clig' off"
+                      }}
+                    >
+                      {isUnread ? 'Mark as read' : 'Mark as unread'}
+                    </span>
+                  </DropdownMenu.Item>
+
+                  {/* Add participants */}
+                  <DropdownMenu.Item
+                    className="cursor-pointer outline-none hover:bg-gray-50 w-full"
+                    style={{ display: 'flex', padding: '12px', alignItems: 'flex-start', gap: '4px' }}
+                  >
+                    <div className="w-4 h-4 flex-shrink-0">
+                      <ParticipantsIcon />
+                    </div>
+                    <span
+                      className="text-[#262626] uppercase"
+                      style={{
+                        fontFamily: 'UniCredit, sans-serif',
+                        fontSize: '14px',
+                        fontStyle: 'normal',
+                        fontWeight: 700,
+                        lineHeight: 'normal',
+                        fontFeatureSettings: "'liga' off, 'clig' off"
+                      }}
+                    >
+                      Add participants
+                    </span>
+                  </DropdownMenu.Item>
+
+                  {/* Export conversation */}
+                  <DropdownMenu.Item
+                    className="cursor-pointer outline-none hover:bg-gray-50 w-full"
+                    style={{ display: 'flex', padding: '12px', alignItems: 'flex-start', gap: '4px' }}
+                  >
+                    <div className="w-4 h-4 flex-shrink-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path fillRule="evenodd" clipRule="evenodd" d="M2 6.35253L8.00043 12L14 6.35253C13.5871 5.94943 13.0878 5.7466 12.5029 5.7466C11.9164 5.7466 11.4179 5.94943 11.0041 6.35253L9 8.2523V0H7V8.25145L4.9959 6.35253C4.58383 5.94943 4.08365 5.7466 3.49881 5.7466C2.91225 5.7466 2.41379 5.94943 2 6.35253ZM1 13.5H12.4353C12.7859 13.5 13.1173 13.5652 13.4305 13.6965C13.7427 13.826 14.0139 14.0056 14.2422 14.2342C14.4723 14.4629 14.6558 14.7281 14.7937 15.03C14.9306 15.3311 15 15.649 15 16H3.56292C3.21323 16 2.88179 15.9411 2.56861 15.8071C2.25635 15.6723 1.98609 15.4918 1.756 15.2676C1.52683 15.0443 1.34331 14.7791 1.20544 14.4727C1.06848 14.1663 1 13.843 1 13.5Z" fill="#262626" />
+                      </svg>
+                    </div>
+                    <span
+                      className="text-[#262626] uppercase"
+                      style={{
+                        fontFamily: 'UniCredit, sans-serif',
+                        fontSize: '14px',
+                        fontStyle: 'normal',
+                        fontWeight: 700,
+                        lineHeight: 'normal',
+                        fontFeatureSettings: "'liga' off, 'clig' off"
+                      }}
+                    >
+                      Export conversation
+                    </span>
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+          </div>
+        </div>
+
+        {/* Todo Messages Section - integrated into header wrapper */}
+        {(() => {
+          const todoMessages = conversationMessages
+            .filter((item): item is ConversationMessage => !isSystemMessage(item) && item.isTodo === true);
+
+          if (todoMessages.length === 0) return null;
+
+          return (
+            <div className="px-6 pb-4">
+              <TodoMessagesSection
+                todoMessages={todoMessages}
+                onViewInChat={(msgId) => {
+                  setSelectedMessageId(msgId);
+                  const element = document.getElementById(`message-${msgId}`);
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                }}
+                onUnmarkTodo={(msgId) => {
+                  setConversationMessages(prev => {
+                    const newMessages = prev.map(item => {
+                      if (!isSystemMessage(item) && item.id === msgId) {
+                        return { ...item, isTodo: false };
+                      }
+                      return item;
+                    });
+
+                    // Notify parent if the overall TODO status of the conversation changed
+                    if (onTodoStatusChange && messageId) {
+                      const hasRemainingTodo = newMessages.some(m => !isSystemMessage(m) && m.isTodo);
+                      onTodoStatusChange(messageId, hasRemainingTodo);
+                    }
+
+                    return newMessages;
+                  });
+                }}
+              />
+            </div>
+          );
+        })()}
+      </div>
+
+      {/* Messages Thread */}
+      <div className={`flex-1 overflow-y-auto ${MESSAGE_STYLES.container.padding} ${MESSAGE_STYLES.container.gap} message-list-scrollbar`}>
+        <div className="min-h-full flex flex-col justify-end gap-3">
+          {conversationMessages.map((item) => {
+            if (isSystemMessage(item)) {
+              return <SystemMessageBubble key={item.id} message={item} />;
+            }
+
+            const message = item as ConversationMessage;
+            const isSelected = selectedMessageId === message.id;
+            const styles = message.isOwn ? MESSAGE_STYLES.sent : MESSAGE_STYLES.received;
+
+            return (
+              <div
+                key={message.id}
+                id={`message-${message.id}`}
+                className={`group relative flex w-full ${styles.alignment}`}
+                onClick={() => setSelectedMessageId(isSelected ? null : message.id)}
+              >
+                <div
+                  className={`${MESSAGE_STYLES.bubble.maxWidth} ${MESSAGE_STYLES.bubble.borderRadius} border ${MESSAGE_STYLES.bubble.padding} cursor-pointer transition-all ${styles.border} ${styles.background} ${isSelected ? 'shadow-sm' : 'hover:shadow-sm'}`}
+                >
+                  <div className="flex items-start justify-between gap-6 mb-3">
+                    <span className={`font-bold ${styles.senderColor}`}>
+                      {message.sender}
+                    </span>
+
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="text-[#262626] uppercase font-bold"
+                        style={{
+                          fontSize: '12px',
+                          lineHeight: 'normal',
+                          fontFeatureSettings: "'liga' off, 'clig' off"
+                        }}
+                      >
+                        {message.timestamp}
+                      </span>
+
+                      {/* Todo Icon - between timestamp and more options */}
+                      {message.isTodo && (
+                        <div className="text-[#262626] flex items-center">
+                          <TodoIcon />
+                        </div>
+                      )}
+
+                      <DropdownMenu.Root>
+                        <DropdownMenu.Trigger asChild>
+                          <button
+                            className="p-1 hover:bg-gray-100 rounded transition-colors outline-none data-[state=open]:bg-gray-100 group/trigger"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <MoreVertical size={20} className="text-[#262626] group-data-[state=open]/trigger:text-[#007a91]" />
+                          </button>
+                        </DropdownMenu.Trigger>
+                        <DropdownMenu.Portal>
+                          <DropdownMenu.Content
+                            className="bg-white rounded-md shadow-lg border border-[#e6e6e6] p-1 min-w-[150px] z-50"
+                            align="end"
+                            sideOffset={2}
+                          >
+                            {(() => {
+                              const todoCount = conversationMessages.filter(
+                                (item): item is ConversationMessage => !isSystemMessage(item) && item.isTodo === true
+                              ).length;
+                              const canAddTodo = todoCount < MAX_TODO_MESSAGES;
+                              const isTodoMessage = message.isTodo === true;
+
+                              if (!isTodoMessage && !canAddTodo) return null;
+
+                              return (
+                                <DropdownMenu.Item
+                                  className="cursor-pointer outline-none hover:bg-gray-50 w-full"
+                                  style={{ display: 'flex', padding: '12px', alignItems: 'flex-start', gap: '4px' }}
+                                  onSelect={() => {
+                                    setConversationMessages(prev => {
+                                      const newMessages = prev.map(item => {
+                                        if (!isSystemMessage(item) && item.id === message.id) {
+                                          return { ...item, isTodo: !item.isTodo };
+                                        }
+                                        return item;
+                                      });
+
+                                      // Notify parent if the overall TODO status of the conversation changed
+                                      if (onTodoStatusChange && messageId) {
+                                        const hasRemainingTodo = newMessages.some(m => !isSystemMessage(m) && m.isTodo);
+                                        onTodoStatusChange(messageId, hasRemainingTodo);
+                                      }
+
+                                      return newMessages;
+                                    });
+                                  }}
+                                >
+                                  <div className="w-4 h-4 flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                      <path fillRule="evenodd" clipRule="evenodd" d="M0.994772 0C0.583161 0 0.25 0.3355 0.25 0.75V16H1.73954V0.75C1.73954 0.3355 1.40638 0 0.994772 0ZM11.1733 6.06125V0.54175C9.71159 1.48 8.24997 1.01087 6.78835 0.54175C5.32674 0.072625 3.86512 -0.3965 2.40338 0.54175V6.06125C3.86512 5.123 5.32674 5.59212 6.78835 6.06125C8.24997 6.53037 9.71159 6.9995 11.1733 6.06125ZM9.65677 11.6392L13.3126 7.95725C13.9854 7.27925 15.0772 7.27925 15.75 7.95725L10.8752 12.8663L9.65677 14.0938L8.43783 12.8663L5.18814 9.59375C5.86092 8.91575 6.95225 8.91575 7.62553 9.59375L9.65677 11.6392Z" fill="#262626" />
+                                    </svg>
+                                  </div>
+                                  <span className="text-[#262626] uppercase font-bold text-sm">
+                                    {isTodoMessage ? 'Unmark as to do' : 'Mark as to do'}
+                                  </span>
+                                </DropdownMenu.Item>
+                              );
+                            })()}
+                            <DropdownMenu.Item
+                              className="cursor-pointer outline-none hover:bg-gray-50 w-full"
+                              style={{ display: 'flex', padding: '12px', alignItems: 'flex-start', gap: '4px' }}
+                            >
+                              <div className="w-4 h-4 flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                  <path fillRule="evenodd" clipRule="evenodd" d="M10.5982 2C11.4673 2.80138 11.4673 4.10188 10.5982 4.904L7.45155 8L10.5982 11.096C11.4673 11.8981 11.4673 13.1979 10.5982 14L4.5 8L10.5982 2Z" fill="#262626" />
+                                </svg>
+                              </div>
+                              <span className="text-[#262626] uppercase font-bold text-sm">Reply</span>
+                            </DropdownMenu.Item>
+                          </DropdownMenu.Content>
+                        </DropdownMenu.Portal>
+                      </DropdownMenu.Root>
+                    </div>
+                  </div>
+
+                  <div className="text-[#262626] leading-relaxed rich-text-content" dangerouslySetInnerHTML={{ __html: message.content }} />
+                </div>
+              </div>
+            );
+          })}
+          <div ref={messagesEndRef} />
+        </div>
+      </div>
+
+      {!conversation.isUserRemoved && (
+        <div className="border-t border-[#e6e6e6] p-4 bg-white">
+          {showEmptyMessageError && (
+            <div className="mb-3 px-4 py-2 bg-[#ffe6e6] border border-[#e2001a] rounded text-[#e2001a] text-sm font-bold">
+              Please type a message before sending
+            </div>
+          )}
+
+          <div className="flex items-end gap-3 translate-y-[-2px]">
+            <div className="flex-1 flex flex-col border border-[#ccc] rounded-md overflow-hidden bg-white shadow-sm">
+              {(isComposerFocused || newMessage.length > 0) && (
+                <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-[#e6e6e6] bg-white overflow-x-auto no-scrollbar">
+                  <button onMouseDown={(e) => e.preventDefault()} onClick={() => execCommand('paste')} className="p-1.5 hover:bg-[#f5f5f5] rounded transition-colors text-[#262626]">
+                    <Clipboard size={18} strokeWidth={1.5} />
+                  </button>
+                  <div className="w-px h-6 bg-[#e6e6e6] mx-1" />
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <div className="flex items-center gap-1.5 px-2 py-1 hover:bg-[#f5f5f5] rounded text-sm cursor-pointer transition-colors">
+                        <span className="text-[#262626] font-medium">{fontSize}</span>
+                        <ChevronDown size={14} className="text-[#666]" />
+                      </div>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Portal>
+                      <DropdownMenu.Content className="bg-white rounded-md shadow-lg border border-[#e6e6e6] p-1 z-[60] min-w-[60px]">
+                        {['14', '16', '18', '20'].map(size => (
+                          <DropdownMenu.Item key={size} onSelect={() => setFontSize(size)} className="px-3 py-1.5 hover:bg-[#e7f8fb] cursor-pointer outline-none rounded-sm text-sm">
+                            {size}
+                          </DropdownMenu.Item>
+                        ))}
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                  </DropdownMenu.Root>
+                  <div className="w-px h-6 bg-[#e6e6e6] mx-1" />
+                  <button onMouseDown={(e) => e.preventDefault()} onClick={() => execCommand('bold')} className={`p-1.5 rounded ${isBold ? 'bg-[#e7f8fb] text-[#007a91]' : 'hover:bg-[#f5f5f5]'}`}>
+                    <Bold size={18} strokeWidth={1.5} />
+                  </button>
+                  <button onMouseDown={(e) => e.preventDefault()} onClick={() => execCommand('italic')} className={`p-1.5 rounded ${isItalic ? 'bg-[#e7f8fb] text-[#007a91]' : 'hover:bg-[#f5f5f5]'}`}>
+                    <Italic size={18} strokeWidth={1.5} />
+                  </button>
+                  <button onMouseDown={(e) => e.preventDefault()} onClick={() => execCommand('underline')} className={`p-1.5 rounded ${isUnderline ? 'bg-[#e7f8fb] text-[#007a91]' : 'hover:bg-[#f5f5f5]'}`}>
+                    <Underline size={18} strokeWidth={1.5} />
+                  </button>
+                </div>
+              )}
+
+              <div
+                ref={editorRef}
+                contentEditable
+                onInput={handleInput}
+                onKeyPress={handleKeyPress}
+                onFocus={() => setIsComposerFocused(true)}
+                onBlur={() => setTimeout(() => setIsComposerFocused(false), 200)}
+                className="w-full px-4 py-[10px] bg-white focus:outline-none transition-colors composer-scrollbar overflow-y-auto rich-text-content"
+                style={{
+                  minHeight: (isComposerFocused || newMessage.length > 0) ? '80px' : '44px',
+                  maxHeight: '200px'
+                }}
+              />
+              {(!newMessage || newMessage === '' || newMessage === '<br>' || newMessage === '<div><br></div>') && !isComposerFocused && (
+                <div className="absolute left-4 top-[10px] text-[#666] pointer-events-none select-none">
+                  Type your message or drag a document
+                </div>
+              )}
+            </div>
+
+            <button onClick={handleSendMessage} className="w-11 h-11 rounded-full bg-[#007a91] hover:bg-[#006577] flex items-center justify-center transition-colors shrink-0">
+              <Send size={20} className="text-white" />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

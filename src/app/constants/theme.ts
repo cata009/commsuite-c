@@ -1,0 +1,211 @@
+/**
+ * UniCredit Design System - Theme Constants
+ * Centralized color palette, typography, and spacing values.
+ */
+
+// Brand Colors
+export const COLORS = {
+  // Primary Brand
+  primary: '#007a91',
+  primaryHover: '#006577',
+  primaryLight: '#e7f8fb',
+
+  // Accent/Highlight
+  highlight: '#BFEBF3',
+
+  // Status Colors
+  error: '#e2001a',
+  errorLight: '#ffe6e6',
+  warning: '#E67300',
+  success: '#007a91',
+
+  // Neutrals
+  text: '#262626',
+  textSecondary: '#666666',
+  textMuted: '#909090',
+
+  // Backgrounds
+  background: '#ffffff',
+  backgroundAlt: '#f5f5f5',
+  backgroundHover: '#f9fafb', // gray-50
+
+  // Borders
+  border: '#e6e6e6',
+  borderDark: '#ccc',
+  borderDarker: '#262626',
+
+  // Badges
+  badgeRead: '#666666',
+  badgeUnread: '#e2001a',
+  badgeInfo: '#007a91',
+  badgeWarning: '#E67300',
+  badgeRecalled: '#909090',
+} as const;
+
+// Typography
+export const TYPOGRAPHY = {
+  fontFamily: {
+    primary: 'UniCredit, sans-serif',
+    fallback: 'system-ui, -apple-system, sans-serif',
+  },
+  fontSize: {
+    xs: '10px',
+    sm: '12px',
+    base: '14px',
+    lg: '16px',
+    xl: '20px',
+    '2xl': '24px',
+  },
+  fontWeight: {
+    normal: 400,
+    medium: 500,
+    bold: 700,
+  },
+  lineHeight: {
+    tight: 1.2,
+    normal: 1.5,
+    relaxed: 1.625,
+  },
+} as const;
+
+// Spacing
+export const SPACING = {
+  xs: '4px',
+  sm: '8px',
+  md: '12px',
+  lg: '16px',
+  xl: '24px',
+  '2xl': '32px',
+  '3xl': '48px',
+} as const;
+
+// Layout
+export const LAYOUT = {
+  leftNav: {
+    width: '64px',
+    iconSize: '24px',
+  },
+  messageListPanel: {
+    width: '390px',
+  },
+  collapseButton: {
+    size: '30px',
+  },
+} as const;
+
+// Shadows
+export const SHADOWS = {
+  sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+  default: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+  md: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+  lg: '2px 2px 7px 0 rgba(0, 0, 0, 0.25)',
+} as const;
+
+// Border Radius
+export const RADIUS = {
+  sm: '4px',
+  md: '8px',
+  lg: '12px',
+  full: '9999px',
+} as const;
+
+// Z-Index layers
+export const Z_INDEX = {
+  base: 0,
+  dropdown: 50,
+  sticky: 100,
+  modal: 200,
+  tooltip: 300,
+} as const;
+
+// Animation durations
+export const TRANSITIONS = {
+  fast: '150ms',
+  normal: '200ms',
+  slow: '300ms',
+  easing: 'ease-out',
+} as const;
+
+/**
+ * Common menu item styles for Radix UI DropdownMenu
+ */
+export const MENU_ITEM_STYLES = {
+  base: {
+    display: 'flex',
+    padding: '12px',
+    alignItems: 'flex-start',
+    gap: '4px',
+  },
+  label: {
+    fontFamily: TYPOGRAPHY.fontFamily.primary,
+    fontSize: TYPOGRAPHY.fontSize.base,
+    fontStyle: 'normal' as const,
+    fontWeight: TYPOGRAPHY.fontWeight.bold,
+    lineHeight: 'normal',
+    fontFeatureSettings: "'liga' off, 'clig' off",
+  },
+} as const;
+
+/**
+ * Get status badge color based on status type
+ */
+export function getStatusBadgeColor(status: string): string {
+  switch (status) {
+    case 'informative':
+      return `bg-[${COLORS.badgeInfo}] text-white`;
+    case 'important':
+      return `bg-[${COLORS.badgeWarning}] text-white`;
+    case 'recalled':
+      return `bg-[${COLORS.badgeRecalled}] text-white`;
+    default:
+      return `bg-[${COLORS.badgeInfo}] text-white`;
+  }
+}
+
+/**
+ * Message Bubble Styles - Centralized configuration
+ * Use these constants for consistent message display
+ */
+export const MESSAGE_STYLES = {
+  // Container for all messages
+  container: {
+    padding: 'px-6 py-4',
+    gap: 'space-y-4',
+  },
+  // Individual message bubble
+  bubble: {
+    maxWidth: 'max-w-[75%]',
+    padding: 'p-3',
+    borderRadius: 'rounded',
+  },
+  // Sent messages (own)
+  sent: {
+    alignment: 'justify-end',
+    border: 'border-[#007a91]',
+    background: 'bg-white',
+    senderColor: 'text-[#007a91]',
+  },
+  // Received messages (others)
+  received: {
+    alignment: 'justify-start',
+    border: 'border-[#909090]',
+    background: 'bg-[#f5f5f5]',
+    senderColor: 'text-[#262626]',
+  },
+} as const;
+
+/**
+ * Content Panel Styles - For detail views (Announcements, etc.)
+ * These use full width with consistent padding
+ */
+export const CONTENT_PANEL_STYLES = {
+  container: {
+    padding: 'px-6 py-6',
+  },
+  header: {
+    padding: 'px-6 py-4',
+  },
+  metaRow: {
+    padding: 'px-6 py-3',
+  },
+} as const;

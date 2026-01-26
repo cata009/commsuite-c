@@ -1,0 +1,623 @@
+
+import { useState, useMemo, useCallback } from 'react';
+import * as Popover from '@radix-ui/react-popover';
+import { FilterPanel } from './FilterPanel';
+import { isWithinInterval, parseISO, startOfDay, endOfDay } from 'date-fns';
+import { CustomTooltip } from './CustomTooltip';
+import { ChevronDown, ChevronLeft, X } from 'lucide-react';
+import { FilterIcon, AttachmentIcon, QuickActionsIcon, SearchIcon, CheckmarkIcon, SearchCloseIcon, TodoIcon } from './NavIcons';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import * as Checkbox from '@radix-ui/react-checkbox';
+import { conversationsData } from '../data/conversationsData';
+import { Message } from '../data/messagesData';
+import { highlightText } from '../utils/searchUtils';
+import { CompanyDisplay } from './CompanyDisplay';
+
+// Internal Icons for Folder Selector
+function RadioUnselectedIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10.5" fill="white" stroke="#262626" />
+    </svg>
+  );
+}
+
+function RadioSelectedIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10.5" fill="white" stroke="#262626" />
+      <circle cx="12" cy="12" r="6" fill="#007a91" />
+    </svg>
+  );
+}
+
+interface FolderSelectionContentProps {
+  currentFolder: string;
+  onApply: (folder: string) => void;
+}
+
+function FolderSelectionContent({ currentFolder, onApply }: FolderSelectionContentProps) {
+  // Local state initialized when the component mounts (when Dropdown opens)
+  const [tempSelected, setTempSelected] = useState(currentFolder);
+  const folders = ['All Folders', 'Inbox', 'Drafts', 'Deleted Items'];
+
+  return (
+    <div className="w-full flex flex-col">
+      {/* Options */}
+      <div className="flex flex-col w-full pb-2 pt-2">
+        {folders.map((folder) => (
+          <div
+            key={folder}
+            onClick={() => setTempSelected(folder)}
+            className="flex items-center px-4 py-3 cursor-pointer hover:bg-gray-50 self-stretch gap-2 transition-colors"
+          >
+            {/* Radio Button Area */}
+            <div className="flex items-start justify-center w-6 h-6 shrink-0">
+              {tempSelected === folder ? <RadioSelectedIcon /> : <RadioUnselectedIcon />}
+            </div>
+
+            {/* Text */}
+            <span
+              className="text-[#262626]"
+              style={{
+                fontFamily: 'UniCredit, sans-serif',
+                fontSize: '16px',
+                fontStyle: 'normal',
+                fontWeight: 700,
+                lineHeight: '24px',
+                fontFeatureSettings: "'liga' off, 'clig' off",
+                textTransform: 'capitalize'
+              }}
+            >
+              {folder}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Buttons */}
+      <div className="flex items-center justify-between w-full px-4 pb-4">
+        {/* Cancel Button - behaves as a Close trigger */}
+        <DropdownMenu.Item asChild>
+          <button
+            className="px-6 py-2 border border-[#262626] rounded bg-white hover:bg-gray-50 text-[#262626] text-sm font-bold uppercase transition-colors outline-none cursor-pointer"
+          >
+            Cancel
+          </button>
+        </DropdownMenu.Item>
+
+        {/* Apply Button */}
+        <DropdownMenu.Item asChild onSelect={() => onApply(tempSelected)}>
+          <button
+            className="px-6 py-2 bg-[#007a91] text-white rounded text-sm font-bold uppercase hover:bg-[#006577] transition-colors outline-none cursor-pointer"
+          >
+            Apply
+          </button>
+        </DropdownMenu.Item>
+      </div>
+    </div>
+  );
+}
+
+interface FilterOptions {
+  company: string | null;
+  members: string[];
+  dateRange: { from: Date | undefined; to: Date | undefined };
+  unread: boolean;
+  todo: boolean;
+  attachments: boolean;
+}
+
+interface MessageListPanelProps {
+  messages: Message[];
+  selectedMessageId: string | null;
+  onSelectMessage: (id: string) => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
+  onMarkAsRead?: (ids: string[]) => void;
+  onMarkAsUnread?: (ids: string[]) => void;
+}
+
+export function MessageListPanel({
+  messages,
+  selectedMessageId,
+  onSelectMessage,
+  isCollapsed = false,
+  onToggleCollapse,
+  searchQuery,
+  onSearchChange,
+  onMarkAsRead,
+  onMarkAsUnread
+}: MessageListPanelProps) {
+  const [selectedFolder, setSelectedFolder] = useState('Inbox');
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const [selectAll, setSelectAll] = useState(false);
+
+  // Filter State
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<FilterOptions>({
+    company: null,
+    members: [],
+    dateRange: { from: undefined, to: undefined },
+    unread: false,
+    todo: false,
+    attachments: false
+  });
+
+  const totalMessages = messages.length;
+  const unreadMessages = messages.filter(m => m.unreadCount > 0).length;
+
+  // Search and Folder Filter functionality
+  const filteredMessages = useMemo(() => {
+    let result = messages;
+
+    // 1. Filter by Folder
+    if (selectedFolder !== 'All Folders') {
+      result = result.filter(m => m.folder === selectedFolder);
+    }
+
+    // 2. Filter by Search Query
+    if (searchQuery?.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((message) => {
+        if (message.sender.toLowerCase().includes(query)) return true;
+        if (message.subject.toLowerCase().includes(query)) return true;
+        const conversation = conversationsData[message.id];
+        if (conversation) {
+          if (conversation.title.toLowerCase().includes(query)) return true;
+          // Check participants list
+          if (conversation.participantsList?.some((p: string) => p.toLowerCase().includes(query))) return true;
+          const hasContentMatch = conversation.messages.some((msg: any) =>
+            msg.content.toLowerCase().includes(query) || msg.sender.toLowerCase().includes(query)
+          );
+          if (hasContentMatch) return true;
+        }
+        return false;
+      });
+    }
+
+    // 3. Advanced Filters
+    // Company
+    if (activeFilters.company) {
+      result = result.filter(m => m.companies.includes(activeFilters.company!));
+    }
+
+    // Date Range
+    if (activeFilters.dateRange.from && activeFilters.dateRange.to) {
+      result = result.filter(m => {
+        if (!m.timestamp) return true;
+        const msgDate = parseISO(m.timestamp);
+        return isWithinInterval(msgDate, {
+          start: startOfDay(activeFilters.dateRange.from!),
+          end: endOfDay(activeFilters.dateRange.to!)
+        });
+      });
+    }
+
+    // Toggles
+    if (activeFilters.unread) {
+      result = result.filter(m => m.unreadCount > 0);
+    }
+    if (activeFilters.todo) {
+      result = result.filter(m => m.isTodo);
+    }
+    if (activeFilters.attachments) {
+      result = result.filter(m => m.hasAttachment);
+    }
+
+    return result;
+  }, [searchQuery, messages, selectedFolder, activeFilters]);
+
+  // Calculate counts based on the selected folder (ignoring search)
+  const folderCounts = useMemo(() => {
+    let inFolder = messages;
+    if (selectedFolder !== 'All Folders') {
+      inFolder = messages.filter(m => m.folder === selectedFolder);
+    }
+    return {
+      total: inFolder.length,
+      unread: inFolder.filter(m => m.unreadCount > 0).length
+    };
+  }, [messages, selectedFolder]);
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedItems(new Set());
+    } else {
+      setSelectedItems(new Set(messages.map(m => m.id)));
+    }
+    setSelectAll(!selectAll);
+  };
+
+  const handleSelectItem = (id: string) => {
+    const newSelected = new Set(selectedItems);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedItems(newSelected);
+    setSelectAll(newSelected.size === messages.length);
+  };
+
+  if (isCollapsed) {
+    return null;
+  }
+
+  const activeCount = [
+    activeFilters.company ? 1 : 0,
+    activeFilters.members.length > 0 ? 1 : 0,
+    (activeFilters.dateRange.from || activeFilters.dateRange.to) ? 1 : 0,
+    activeFilters.unread ? 1 : 0,
+    activeFilters.todo ? 1 : 0,
+    activeFilters.attachments ? 1 : 0
+  ].reduce((a, b) => a + b, 0);
+
+  return (
+    <div className="w-[390px] shrink-0 border-r border-[#e6e6e6] bg-white flex flex-col h-full transition-all duration-300 ease-out relative">
+      {/* Search and Filter */}
+      <div className="p-3 border-b border-[#e6e6e6]">
+        <div className="flex gap-3 items-center mb-3">
+          <div className="flex-1 relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2">
+              <SearchIcon />
+            </div>
+            <input
+              type="text"
+              placeholder="Search"
+              value={searchQuery}
+              onChange={(e) => onSearchChange?.(e.target.value)}
+              className="w-full pl-9 pr-9 py-1.5 text-sm border border-[#ccc] rounded bg-white focus:outline-none focus:border-[#007a91]"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => onSearchChange?.('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-80 transition-opacity"
+              >
+                <SearchCloseIcon />
+              </button>
+            )}
+          </div>
+          <button
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            className={`flex items-center gap-2 px-2.5 py-2 rounded transition-colors border ${isFilterOpen || activeCount > 0
+              ? 'bg-[#e7f8fb] text-[#007a91] border-[#007a91]'
+              : 'hover:bg-gray-100 border-transparent text-[#262626]'
+              }`}
+          >
+            <FilterIcon />
+            {activeCount > 0 && (
+              <>
+                <span className="text-sm font-bold">{activeCount}</span>
+                <div
+                  role="button"
+                  className="ml-1 p-0.5 hover:bg-[#d0f0f5] rounded-full flex items-center justify-center"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveFilters({
+                      company: null,
+                      members: [],
+                      dateRange: { from: undefined, to: undefined },
+                      unread: false,
+                      todo: false,
+                      attachments: false
+                    });
+                  }}
+                >
+                  <X size={14} />
+                </div>
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Folder Selector */}
+        <div className="flex items-center justify-between pb-1 border-b border-[#ccc]">
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <div className="flex-1 flex items-center justify-between cursor-pointer group outline-none pr-4">
+                <button className="flex items-center gap-2 text-xl font-bold text-[#262626] group-hover:text-[#007a91] transition-colors outline-none">
+                  <span>{selectedFolder}</span>
+                  <ChevronDown size={16} />
+                </button>
+              </div>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content
+                className="bg-white rounded-[4px] shadow-lg border border-[#262626] z-50 flex flex-col items-center"
+                sideOffset={5}
+                align="start"
+                style={{ width: 'var(--radix-dropdown-menu-trigger-width)' }}
+              >
+                <FolderSelectionContent
+                  currentFolder={selectedFolder}
+                  onApply={(folder) => setSelectedFolder(folder)}
+                />
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
+
+          <div className="text-sm">
+            <span className="font-bold">{folderCounts.unread}</span>
+            <span className="text-[#666]">/{folderCounts.total} unread</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Content Area: Either Filter Panel or Message List */}
+      {isFilterOpen ? (
+        <div className="flex-1 h-full overflow-hidden bg-white">
+          <FilterPanel
+            onApply={(filters: FilterOptions) => { setActiveFilters(filters); setIsFilterOpen(false); }}
+            onCancel={() => setIsFilterOpen(false)}
+          />
+        </div>
+      ) : (
+        <>
+          {/* Select All - Only shown in specific folders */}
+          {selectedFolder !== 'All Folders' && (
+            <div className="px-3 py-3 bg-white">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Checkbox.Root
+                    checked={selectAll}
+                    onCheckedChange={handleSelectAll}
+                    className="w-4 h-4 border border-[#262626] bg-white rounded flex items-center justify-center shrink-0 data-[state=checked]:bg-white data-[state=checked]:border-[#262626]"
+                    style={{ borderRadius: '4px' }}
+                  >
+                    <Checkbox.Indicator className="flex items-center justify-center">
+                      <CheckmarkIcon />
+                    </Checkbox.Indicator>
+                  </Checkbox.Root>
+                  <span className="text-sm font-bold uppercase">
+                    {selectedItems.size > 0 ? `${selectedItems.size} SELECTED` : 'ALL'}
+                  </span>
+                </div>
+                {selectedItems.size > 0 && (
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <button className="flex items-center gap-1 outline-none group">
+                        <span
+                          className="uppercase text-[#007a91]"
+                          style={{
+                            fontFamily: 'UniCredit, sans-serif',
+                            fontSize: '14px',
+                            fontWeight: 700,
+                            fontFeatureSettings: "'liga' off, 'clig' off"
+                          }}
+                        >
+                          ACTIONS
+                        </span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" className="transition-transform group-data-[state=open]:-rotate-180">
+                          <path fillRule="evenodd" clipRule="evenodd" d="M1.5 4.98881C2.10103 4.33706 3.07641 4.33706 3.678 4.98881L6 7.34884L8.322 4.98881C8.92359 4.33706 9.89841 4.33706 10.5 4.98881L6 9.5625L1.5 4.98881Z" fill="#007A91" />
+                        </svg>
+                      </button>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Portal>
+                      <DropdownMenu.Content
+                        className="bg-white rounded-md shadow-lg border border-[#e6e6e6] p-1 min-w-[200px] z-50"
+                        align="end"
+                        sideOffset={5}
+                      >
+                        {(() => {
+                          // Action Logic
+                          const isAllFolders = selectedFolder === 'All Folders';
+                          if (isAllFolders && selectedItems.size > 1) {
+                            return (
+                              <DropdownMenu.Item className="px-3 py-2 text-sm text-[#666] italic cursor-default outline-none">
+                                Bulk actions not available in All Folders
+                              </DropdownMenu.Item>
+                            );
+                          }
+
+                          const selectedMessages = messages.filter(m => selectedItems.has(m.id));
+                          const hasUnread = selectedMessages.some(m => m.unreadCount > 0);
+                          const hasRead = selectedMessages.some(m => m.unreadCount === 0);
+                          const isDeletedFolder = selectedFolder === 'Deleted Items';
+                          const isDraftsFolder = selectedFolder === 'Drafts';
+
+                          // Restore logic for Deleted Items
+                          if (isDeletedFolder) {
+                            return (
+                              <>
+                                <DropdownMenu.Item
+                                  className="px-3 py-2 text-sm text-[#262626] hover:bg-[#e7f8fb] rounded cursor-pointer outline-none uppercase font-bold"
+                                  onSelect={() => {
+                                    // Restore logic placeholder
+                                    console.log('Restore', selectedItems);
+                                    setSelectedItems(new Set());
+                                    setSelectAll(false);
+                                  }}
+                                >
+                                  Restore Conversation
+                                </DropdownMenu.Item>
+                                {selectedItems.size === 1 && (
+                                  <DropdownMenu.Item className="px-3 py-2 text-sm text-[#262626] hover:bg-[#e7f8fb] rounded cursor-pointer outline-none uppercase font-bold">
+                                    Download Conversation
+                                  </DropdownMenu.Item>
+                                )}
+                              </>
+                            );
+                          }
+
+                          // Drafts Logic
+                          if (isDraftsFolder) {
+                            return (
+                              <DropdownMenu.Item
+                                className="px-3 py-2 text-sm text-[#e2001a] hover:bg-[#ffe6e6] rounded cursor-pointer outline-none uppercase font-bold"
+                                onSelect={() => {
+                                  // Delete logic
+                                  console.log('Delete Drafts', selectedItems);
+                                  setSelectedItems(new Set());
+                                  setSelectAll(false);
+                                }}
+                              >
+                                Delete
+                              </DropdownMenu.Item>
+                            );
+                          }
+
+                          // Standard (Inbox / Other) Logic
+                          return (
+                            <>
+                              {/* Read/Unread Toggles */}
+                              {(hasUnread || (selectedItems.size > 1 && hasUnread && hasRead)) && (
+                                <DropdownMenu.Item
+                                  className="px-3 py-2 text-sm text-[#262626] hover:bg-[#e7f8fb] rounded cursor-pointer outline-none uppercase font-bold"
+                                  onSelect={() => {
+                                    // Handler for Mark as Read
+                                    if (onMarkAsRead) {
+                                      onMarkAsRead(Array.from(selectedItems));
+                                    }
+                                    setSelectedItems(new Set());
+                                    setSelectAll(false);
+                                  }}
+                                >
+                                  Mark as read
+                                </DropdownMenu.Item>
+                              )}
+
+                              {(hasRead || (selectedItems.size > 1 && hasUnread && hasRead)) && (
+                                <DropdownMenu.Item
+                                  className="px-3 py-2 text-sm text-[#262626] hover:bg-[#e7f8fb] rounded cursor-pointer outline-none uppercase font-bold"
+                                  onSelect={() => {
+                                    // Handler for Mark as Unread
+                                    if (onMarkAsUnread) {
+                                      onMarkAsUnread(Array.from(selectedItems));
+                                    }
+                                    setSelectedItems(new Set());
+                                    setSelectAll(false);
+                                  }}
+                                >
+                                  Mark as unread
+                                </DropdownMenu.Item>
+                              )}
+
+                              {/* Single Item Extras */}
+                              {selectedItems.size === 1 && (
+                                <>
+                                  <DropdownMenu.Item className="px-3 py-2 text-sm text-[#262626] hover:bg-[#e7f8fb] rounded cursor-pointer outline-none uppercase font-bold">
+                                    Forward Conversation
+                                  </DropdownMenu.Item>
+                                  <DropdownMenu.Item className="px-3 py-2 text-sm text-[#262626] hover:bg-[#e7f8fb] rounded cursor-pointer outline-none uppercase font-bold">
+                                    Download Conversation
+                                  </DropdownMenu.Item>
+                                </>
+                              )}
+
+                              <DropdownMenu.Separator className="h-px bg-[#e6e6e6] my-1" />
+
+                              {/* Delete */}
+                              <DropdownMenu.Item
+                                className="px-3 py-2 text-sm text-[#e2001a] hover:bg-[#ffe6e6] rounded cursor-pointer outline-none uppercase font-bold"
+                                onSelect={() => {
+                                  console.log('Delete', selectedItems);
+                                  setSelectedItems(new Set());
+                                  setSelectAll(false);
+                                }}
+                              >
+                                Delete
+                              </DropdownMenu.Item>
+                            </>
+                          );
+                        })()}
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                  </DropdownMenu.Root>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Messages List */}
+          <div className="flex-1 overflow-y-auto message-list-scrollbar">
+            {filteredMessages.map((message) => {
+              const isSelected = selectedMessageId === message.id;
+              const isChecked = selectedItems.has(message.id);
+
+              return (
+                <div
+                  key={message.id}
+                  className={`px-3 py-3 border-b border-[#ccc] cursor-pointer transition-colors ${isSelected ? 'bg-[#e7f8fb]' : 'hover:bg-gray-50'
+                    }`}
+                  onClick={() => onSelectMessage(message.id)}
+                >
+                  <div className="flex items-center gap-2">
+                    {selectedFolder !== 'All Folders' && (
+                      <Checkbox.Root
+                        checked={isChecked}
+                        onCheckedChange={() => handleSelectItem(message.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-4 h-4 border border-[#262626] rounded bg-white shrink-0 flex items-center justify-center data-[state=checked]:bg-white data-[state=checked]:border-[#262626]"
+                        style={{ borderRadius: '4px' }}
+                      >
+                        <Checkbox.Indicator className="flex items-center justify-center">
+                          <CheckmarkIcon />
+                        </Checkbox.Indicator>
+                      </Checkbox.Root>
+                    )}
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <CompanyDisplay
+                          companies={message.companies}
+                          textSize="text-xs"
+                          isBold={message.unreadCount > 0}
+                          maxWidth="max-w-[200px]"
+                          tooltipAlign="start"
+                          tooltipSide="top"
+                        />
+                        <span className="text-xs text-[#262626] font-normal shrink-0">{message.time}</span>
+                      </div>
+
+                      <div className="flex items-center justify-between mb-2">
+                        <span className={`text-base ${message.unreadCount > 0 ? 'font-bold' : 'font-normal'}`}>
+                          {message.sender}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          {message.isTodo && (
+                            <TodoIcon />
+                          )}
+                          {message.hasAttachment && (
+                            <AttachmentIcon />
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <CustomTooltip content={message.subject} side="top" align="start">
+                          <span className={`text-sm text-[#262626] truncate flex-1 ${message.unreadCount > 0 ? 'font-bold' : 'font-normal'}`}>
+                            {highlightText(message.subject, searchQuery)}
+                          </span>
+                        </CustomTooltip>
+                        {message.unreadCount > 0 && (
+                          <div className={`ml-2 px-1.5 py-0.5 rounded text-xs font-bold text-white shrink-0 ${message.isEntered ? 'bg-[#666]' : 'bg-[#e2001a]'
+                            }`}>
+                            {message.unreadCount}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {/* Collapse Button on Divider */}
+      {onToggleCollapse && (
+        <button
+          onClick={onToggleCollapse}
+          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-[30px] h-[30px] bg-white rounded-lg shadow-[2px_2px_7px_0_rgba(0,0,0,0.25)] hover:bg-gray-50 active:bg-gray-100 flex items-center justify-center transition-colors z-10"
+          title="Collapse messages list"
+        >
+          <ChevronLeft size={16} className="text-[#262626]" />
+        </button>
+      )}
+    </div>
+  );
+}
