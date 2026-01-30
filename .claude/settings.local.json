@@ -5,7 +5,21 @@
       "Bash(npm run build:*)",
       "Bash(npx tsc:*)",
       "Bash(./node_modules/.bin/tsc:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npx @angular/cli@13 new:*)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss init)",
+      "Bash(git -C \"C:\\\\Users\\\\mihai\\\\Desktop\\\\Commsuite\" status --porcelain)",
+      "Bash(git -C \"C:\\\\Users\\\\mihai\\\\Desktop\\\\Commsuite\" show HEAD:src/app/components/ConversationPanel.tsx)",
+      "Bash(git -C \"C:\\\\Users\\\\mihai\\\\Desktop\\\\Commsuite\" show HEAD:src/app/components/SystemMessageBubble.tsx)",
+      "Bash(git -C \"C:\\\\Users\\\\mihai\\\\Desktop\\\\Commsuite\" show HEAD:src/app/components/TodoMessageCard.tsx)",
+      "Bash(git -C \"C:\\\\Users\\\\mihai\\\\Desktop\\\\Commsuite\" show HEAD:src/app/components/AnnouncementsPanel.tsx)",
+      "Bash(git -C \"C:\\\\Users\\\\mihai\\\\Desktop\\\\Commsuite\" show HEAD:src/app/components/AnnouncementsListPanel.tsx)",
+      "Bash(git -C \"C:\\\\Users\\\\mihai\\\\Desktop\\\\Commsuite\" show HEAD:src/app/components/AnnouncementDetailPanel.tsx)",
+      "Bash(git -C \"C:\\\\Users\\\\mihai\\\\Desktop\\\\Commsuite\" show HEAD:src/app/components/ContactsPanel.tsx)",
+      "Bash(git -C \"C:\\\\Users\\\\mihai\\\\Desktop\\\\Commsuite\" show HEAD:src/app/components/NewMessageDialog.tsx)",
+      "Bash(npx ng serve:*)"
     ]
   }
 }

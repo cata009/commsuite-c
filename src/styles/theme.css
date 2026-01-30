@@ -336,3 +336,63 @@
 .rich-text-content span[style*="font-size"] {
   line-height: normal;
 }
+
+/* ========================================
+   GLOBAL TOOLTIP STYLES
+   Consistent tooltip styling across platform
+   ======================================== */
+
+[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  display: inline-flex;
+  padding: 6px 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 4px;
+  background: #666;
+  color: #FFF;
+  text-align: center;
+  font-feature-settings: 'liga' off, 'clig' off;
+  font-family: 'UniCredit', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  white-space: pre-line;
+  z-index: 1000;
+  pointer-events: none;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+}
+
+/* Remove default browser tooltip */
+[title] {
+  position: relative;
+}
+
+.custom-tooltip {
+  position: fixed;
+  display: inline-flex;
+  padding: 6px 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 4px;
+  background: #666;
+  color: #FFF;
+  text-align: center;
+  font-feature-settings: 'liga' off, 'clig' off;
+  font-family: 'UniCredit', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  white-space: pre-line;
+  z-index: 10000;
+  pointer-events: none;
+  max-width: 300px;
+}

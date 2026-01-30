@@ -1,0 +1,1 @@
+{"ast":null,"code":"export function isSystemMessage(item) {\n  return 'type' in item && !('content' in item);\n}","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}

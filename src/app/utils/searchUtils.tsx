@@ -14,6 +14,10 @@ export function highlightText(
   searchQuery: string | undefined,
   highlightClassName?: string
 ): React.ReactNode {
+  if (!text || typeof text !== 'string') {
+    return text || '';
+  }
+
   if (!searchQuery?.trim()) {
     return text;
   }
@@ -50,7 +54,7 @@ export function highlightText(
 export function filterBySearch<T>(
   items: T[],
   searchQuery: string | undefined,
-  getSearchableFields: (item: T) => string[]
+  getSearchableFields: (item: T) => (string | undefined | null)[]
 ): T[] {
   if (!searchQuery?.trim()) {
     return items;
@@ -60,7 +64,7 @@ export function filterBySearch<T>(
 
   return items.filter((item) => {
     const fields = getSearchableFields(item);
-    return fields.some((field) => field.toLowerCase().includes(query));
+    return fields.some((field) => field && field.toLowerCase().includes(query));
   });
 }
 

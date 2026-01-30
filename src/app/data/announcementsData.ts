@@ -1,22 +1,9 @@
-export interface AnnouncementItem {
-  id: string;
-  companies: string[];
-  title: string;
-  preview: string;
-  publishedDate: string;
-  updatedDate: string;
-  hasAttachment: boolean;
-  hasTodo: boolean;
-  status: 'informative' | 'important' | 'recalled';
-  isRead: boolean;
-  content: string;
-  expirationDate?: string;
-  folder: 'Inbox' | 'Deleted';
-}
+import { Announcement } from '../types';
+export type AnnouncementItem = Announcement;
 
 export const announcementsData: AnnouncementItem[] = [
   {
-    id: '1',
+    id: '8f9e0a1b-2c3d-4e5f-6a7b-8c9d0e1f2a3b', // Was '1'
     companies: ['PRIMEO S.A.', 'FILTERMAG SOLUTION', 'AUTOMECX', 'ACME CORPORATION INC.'],
     title: 'New services',
     preview: 'We are thrilled to bring you exciting news that we believe will greatly enhance your banking experience!',
@@ -45,7 +32,7 @@ We are thrilled to bring you exciting news that we believe will greatly enhance 
 We appreciate your continued trust and loyalty. If you have any questions or need assistance, please do not hesitate to contact our customer support at +61-12-3456 or visit your nearest branch.`
   },
   {
-    id: '2',
+    id: 'e0f1a2b3-c4d5-6e7f-8a9b-0c1d2e3f4a5b', // Was '2'
     companies: ['UniCredit Bank'],
     title: 'UniCredit Bank',
     preview: 'Important update regarding our mobile banking services',
@@ -70,7 +57,7 @@ All other banking services, including online banking via desktop, will remain fu
 We apologize for any inconvenience and appreciate your understanding.`
   },
   {
-    id: '3',
+    id: 'b6c7d8e9-f0a1-2b3c-4d5e-6f7a8b9c0d1e', // Was '3'
     companies: ['LASTCOMPANY S.P.A.', 'UniCredit Bank'],
     title: 'New credit for entrepreneurs',
     preview: 'Special financing options now available for small and medium businesses',
@@ -97,7 +84,7 @@ This program is part of our commitment to support local businesses and foster ec
 To learn more or apply, please contact your relationship manager or visit our business banking center.`
   },
   {
-    id: '4',
+    id: 'd4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f9a', // Was '4'
     companies: ['Technology Solution'],
     title: 'Technology solution',
     preview: 'New appointment to our team',
@@ -111,7 +98,7 @@ To learn more or apply, please contact your relationship manager or visit our bu
     content: `This announcement has been recalled and is no longer valid.`
   },
   {
-    id: '5',
+    id: 'f0a1b2c3-d4e5-6f7a-8b9c-0d1e2f3a4b5c', // Was '5'
     companies: ['UniCredit Bank'],
     title: 'UniCredit Bank',
     preview: 'Branch network expansion - New locations opening soon',
@@ -141,7 +128,7 @@ Each new branch will offer full banking services, extended hours, and dedicated 
 We look forward to serving you better with these new convenient locations.`
   },
   {
-    id: '6',
+    id: '1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d', // Was '6'
     companies: ['Global Industries', 'INTECH'],
     title: 'You feedback matters',
     preview: 'We value your opinion! Participate in our customer satisfaction survey',
@@ -166,7 +153,7 @@ Click here to start the survey: [Survey Link]
 Thank you for being a valued customer!`
   },
   {
-    id: '7',
+    id: '7e8f9a0b-1c2d-3e4f-5a6b-7c8d9e0f1a2b', // Was '7'
     companies: ['UniCredit Bank'],
     title: 'Important communication',
     preview: 'Updated terms and conditions for savings accounts - Effective August 1, 2025',
@@ -195,7 +182,7 @@ If you have any questions about these changes, please don't hesitate to contact 
 These changes are designed to provide you with better value and more flexibility in managing your savings.`
   },
   {
-    id: '8',
+    id: '3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f', // Was '8'
     companies: ['Global Industries'],
     title: 'Global Industries',
     preview: 'Invitation to exclusive investment webinar series',
@@ -225,7 +212,7 @@ Register now: [Registration Link]
 We look forward to your participation!`
   },
   {
-    id: '9',
+    id: '9a0b1c2d-3e4f-5a6b-7c8d-9e0f1a2b3c4d', // Was '9'
     companies: ['LASTCOMPANY S.P.A.'],
     title: 'LASTCOMPANY S.P.A.',
     preview: 'Holiday banking hours - Summer 2025 schedule',
@@ -251,7 +238,7 @@ For any urgent banking needs during these dates, please use our ATM network or d
 Enjoy your summer holidays!`
   },
   {
-    id: '10',
+    id: '5e6f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b', // Was '10'
     companies: ['UniCredit Bank', 'Technology Solution', 'INTECH'],
     title: 'Important communication',
     preview: 'Enhanced fraud protection measures now active',

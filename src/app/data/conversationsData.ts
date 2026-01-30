@@ -1,56 +1,25 @@
 import { CURRENT_USER, getCurrentUserWithYouSuffix } from './usersData';
 
-export interface ConversationMessage {
-  id: string;
-  sender: string;
-  content: string;
-  timestamp: string;
-  isOwn: boolean;
-  isTodo?: boolean;
-}
+import {
+  ConversationMessage,
+  SystemMessageType,
+  SystemMessage,
+  ConversationItem,
+  ConversationData,
+  isSystemMessage
+} from '../types';
+
+export type { ConversationMessage, SystemMessageType, SystemMessage, ConversationItem, ConversationData };
+export { isSystemMessage };
 
 export const MAX_TODO_MESSAGES = 5;
-
-export type SystemMessageType =
-  | 'member_added'
-  | 'member_removed'
-  | 'you_were_added'
-  | 'you_were_removed'
-  | 'member_left_org'
-  | 'you_left_org'
-  | 'banker_replaced';
-
-export interface SystemMessage {
-  id: string;
-  type: SystemMessageType;
-  timestamp: string;
-  actor?: string;
-  targetUser: string;
-  organization?: string;
-  replacementUser?: string;
-}
-
-export type ConversationItem = ConversationMessage | SystemMessage;
-
-export function isSystemMessage(item: ConversationItem): item is SystemMessage {
-  return 'type' in item && !('content' in item);
-}
-
-export interface ConversationData {
-  title: string;
-  lastUpdated: string;
-  participants: number;
-  participantsList: string[];
-  messages: ConversationItem[];
-  isUserRemoved?: boolean;
-}
 
 const CURRENT_USER_DISPLAY = getCurrentUserWithYouSuffix();
 const CURRENT_USER_NAME = `${CURRENT_USER.lastName} ${CURRENT_USER.firstName}`;
 const CURRENT_USER_ORG = CURRENT_USER.organization;
 
 export const conversationsData: Record<string, ConversationData> = {
-  '1': {
+  'c7b3d2e1-4a5b-4c6d-8e9f-1a2b3c4d5e6f': { // Was '1'
     title: 'Board Room Presentation: Q3 Strategy',
     lastUpdated: '16.06.2023 11:45',
     participants: 8,
@@ -203,7 +172,7 @@ export const conversationsData: Record<string, ConversationData> = {
       },
     ],
   },
-  '2': {
+  'b8c9d0e1-f2a3-4b5c-6d7e-8f9a0b1c2d3e': { // Was '2'
     title: 'Investment opportunities in Green Tech',
     lastUpdated: '16.06.2023 10:30',
     participants: 6,
@@ -276,7 +245,7 @@ export const conversationsData: Record<string, ConversationData> = {
       },
     ],
   },
-  '3': {
+  'd4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f9a': { // Was '3'
     title: 'Q2 Comprehensive Financial Report',
     lastUpdated: '16.06.2023 09:15',
     participants: 12,
@@ -343,7 +312,7 @@ export const conversationsData: Record<string, ConversationData> = {
       },
     ],
   },
-  '4': {
+  'f0a1b2c3-d4e5-6f7a-8b9c-0d1e2f3a4b5c': { // Was '4'
     title: 'System migration & maintenance',
     lastUpdated: '15.06.2023 16:20',
     participants: 25,
@@ -402,7 +371,7 @@ export const conversationsData: Record<string, ConversationData> = {
       },
     ],
   },
-  '5': {
+  '1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d': { // Was '5'
     title: 'Recruitment strategy for Tech expansion',
     lastUpdated: '15.06.2023 14:00',
     participants: 3,
@@ -449,7 +418,7 @@ export const conversationsData: Record<string, ConversationData> = {
       },
     ],
   },
-  '6': {
+  '7e8f9a0b-1c2d-3e4f-5a6b-7c8d9e0f1a2b': { // Was '6'
     title: 'Partnership Agreement final draft',
     lastUpdated: '15.06.2023 17:30',
     participants: 6,
@@ -497,7 +466,7 @@ export const conversationsData: Record<string, ConversationData> = {
       },
     ],
   },
-  '7': {
+  '3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f': { // Was '7'
     title: 'Syndicated Loan approval process',
     lastUpdated: '14.06.2023 11:20',
     participants: 4,
@@ -545,7 +514,7 @@ export const conversationsData: Record<string, ConversationData> = {
       },
     ],
   },
-  '8': {
+  '9a0b1c2d-3e4f-5a6b-7c8d-9e0f1a2b3c4d': { // Was '8'
     title: 'CRE Risk Analysis Report',
     lastUpdated: '14.06.2023 16:00',
     participants: 6,
@@ -587,7 +556,7 @@ export const conversationsData: Record<string, ConversationData> = {
       },
     ],
   },
-  '9': {
+  '5e6f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b': { // Was '9'
     title: 'Portfolio rebalancing strategy',
     lastUpdated: '13.06.2023 13:45',
     participants: 9,
@@ -633,7 +602,7 @@ export const conversationsData: Record<string, ConversationData> = {
       },
     ],
   },
-  '10': {
+  '123e4567-e89b-12d3-a456-426614174000': { // Was '10'
     title: 'Market analysis Q3 2023',
     lastUpdated: '13.06.2023 09:30',
     participants: 15,
@@ -670,7 +639,7 @@ export const conversationsData: Record<string, ConversationData> = {
       },
     ],
   },
-  '11': {
+  'f47ac10b-58cc-4372-a567-0e02b2c3d479': { // Was '11'
     title: 'Client presentation materials',
     lastUpdated: '12.06.2023 16:45',
     participants: 5,
@@ -705,7 +674,7 @@ export const conversationsData: Record<string, ConversationData> = {
       },
     ],
   },
-  '12': {
+  '550e8400-e29b-41d4-a716-446655440000': { // Was '12'
     title: 'Startup investment pipeline',
     lastUpdated: '12.06.2023 11:00',
     participants: 8,

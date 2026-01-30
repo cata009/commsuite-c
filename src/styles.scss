@@ -1,0 +1,51 @@
+/*
+  You can add global styles to this file, and also import other style files
+*/
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global Scrollbar Styles (replicated from React) */
+.message-list-scrollbar::-webkit-scrollbar,
+.hover-scrollbar::-webkit-scrollbar,
+.composer-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.message-list-scrollbar::-webkit-scrollbar-track,
+.hover-scrollbar::-webkit-scrollbar-track,
+.composer-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.message-list-scrollbar::-webkit-scrollbar-thumb,
+.hover-scrollbar::-webkit-scrollbar-thumb,
+.composer-scrollbar::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.message-list-scrollbar::-webkit-scrollbar-thumb:hover,
+.hover-scrollbar::-webkit-scrollbar-thumb:hover,
+.composer-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* Base resets */
+html,
+body {
+    height: 100%;
+    margin: 0;
+    /* Professional Font Stack: 
+       1. UniCredit (if installed locally)
+       2. Segoe UI (Windows standard - clean & modern)
+       3. Roboto (Android/Chrome standard)
+       4. Helvetica Neue (macOS standard)
+       5. sans-serif (Browser default)
+    */
+    font-family: 'UniCredit', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #262626;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}

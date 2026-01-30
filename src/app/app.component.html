@@ -1,0 +1,29 @@
+<div class="flex flex-col h-screen min-w-[1024px] overflow-hidden bg-white text-[#262626] font-sans">
+    <div class="flex flex-1 h-full overflow-hidden">
+        <!-- Sidebar -->
+        <app-left-nav class="h-full"></app-left-nav>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col h-full min-w-0 bg-white">
+            <!-- App Header is actually part of each page in my React design? 
+          Wait, looking at React App.tsx:
+          <div className="flex flex-1 h-full overflow-hidden">
+              <LeftNav ... />
+              <div className="flex-1 flex flex-col h-full min-w-0 bg-white">
+                  <AppHeader ... />
+                  <Routes>...</Routes>
+              </div>
+          </div>
+          
+          Correct, AppHeader is common.
+       -->
+            <app-header (onNewMessage)="onNewMessage()"></app-header>
+            <app-notification></app-notification>
+
+            <!-- Router Outlet -->
+            <div class="flex-1 relative z-0">
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+    </div>
+</div>

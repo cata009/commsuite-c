@@ -1,0 +1,146 @@
+﻿import { SystemMessage, SystemMessageType } from '../data/conversationsData';
+
+interface SystemMessageBubbleProps {
+  message: SystemMessage;
+}
+
+/**
+ * Formats the system message text based on the message type
+ */
+function formatSystemMessageText(message: SystemMessage): string {
+  const { type, actor, targetUser, organization } = message;
+
+  switch (type) {
+    case 'member_added':
+      // Special case: System auto-add (banker replacement)
+      if (actor === 'System') {
+        return `${targetUser} has been added to the conversation`;
+      }
+      return `${actor} added ${targetUser} to the conversation`;
+
+    case 'member_removed':
+      return `${actor} removed ${targetUser} from the conversation`;
+
+    case 'you_were_added':
+      return `${actor} added You to the conversation`;
+
+    case 'you_were_removed':
+      return `${actor} removed ${targetUser} from the conversation`;
+
+    case 'member_left_org':
+      return `${targetUser} was removed from the conversation because ${getGenderPronoun(targetUser)} is no longer part of ${organization}`;
+
+    case 'you_left_org':
+      return `You were removed from the conversation because you are no longer part of ${organization}`;
+
+    case 'banker_replaced':
+      return `${targetUser} was removed from the conversation as ${getGenderPronoun(targetUser)} is no longer assigned to organisation`;
+
+    default:
+      return '';
+  }
+}
+
+/**
+ * Simple gender pronoun helper - in real app this would come from user data
+ * For demo, we'll use "they" as default or detect based on common name endings
+ */
+function getGenderPronoun(name: string): string {
+  // Simple heuristic for demo purposes
+  const femaleEndings = ['a', 'ia', 'na', 'la', 'cia', 'sia'];
+  const lowerName = name.toLowerCase().split(' ')[0];
+
+  if (femaleEndings.some(ending => lowerName.endsWith(ending))) {
+    return 'she';
+  }
+  return 'he';
+}
+
+/**
+ * System Message Bubble Component
+ * Displays member add/remove notifications in the conversation thread
+ * Styled to match the design specs - centered, with border and background
+ */
+export function SystemMessageBubble({ message }: SystemMessageBubbleProps) {
+  const text = formatSystemMessageText(message);
+
+  return (
+    <div className="flex justify-center w-full my-2">
+      <div
+        className="inline-flex px-3 py-1.5 justify-center items-center rounded border border-[#007A91] bg-[#E7F8FB]"
+        style={{
+          borderRadius: '4px',
+        }}
+      >
+        <span
+          className="text-[#262626] text-center"
+          style={{
+            fontFamily: 'UniCredit, sans-serif',
+            fontSize: '14px',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            lineHeight: '16px',
+            fontFeatureSettings: "'liga' off, 'clig' off",
+          }}
+        >
+          {text}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Additional component for banker replacement scenario
+ * Shows two messages: removal and addition
+ */
+interface BankerReplacementBubbleProps {
+  removedBanker: string;
+  addedBanker: string;
+  timestamp: string;
+}
+
+export function BankerReplacementBubble({ removedBanker, addedBanker, timestamp }: BankerReplacementBubbleProps) {
+  return (
+    <div className="flex flex-col items-center gap-1 w-full my-2">
+      {/* Removal message */}
+      <div
+        className="inline-flex px-3 py-1.5 justify-center items-center rounded border border-[#007A91] bg-[#E7F8FB]"
+        style={{ borderRadius: '4px' }}
+      >
+        <span
+          className="text-[#262626] text-center"
+          style={{
+            fontFamily: 'UniCredit, sans-serif',
+            fontSize: '14px',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            lineHeight: '16px',
+            fontFeatureSettings: "'liga' off, 'clig' off",
+          }}
+        >
+          {removedBanker} was removed from the conversation as {getGenderPronoun(removedBanker)} is no longer assigned to organisation
+        </span>
+      </div>
+      {/* Addition message */}
+      <div
+        className="inline-flex px-3 py-1.5 justify-center items-center rounded border border-[#007A91] bg-[#E7F8FB]"
+        style={{ borderRadius: '4px' }}
+      >
+        <span
+          className="text-[#262626] text-center"
+          style={{
+            fontFamily: 'UniCredit, sans-serif',
+            fontSize: '14px',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            lineHeight: '16px',
+            fontFeatureSettings: "'liga' off, 'clig' off",
+          }}
+        >
+          {addedBanker} has been added to the conversation
+        </span>
+      </div>
+    </div>
+  );
+}
