@@ -1,13 +1,14 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AppIconComponent } from './components/icons/app-icon.component';
-import { CompanyDisplayComponent } from './components/company-display/company-display.component';
-import { MessageListSkeletonComponent } from './components/skeletons/message-list-skeleton.component';
-import { AnnouncementListSkeletonComponent } from './components/skeletons/announcement-list-skeleton.component';
-import { DropdownMenuComponent } from './components/dropdown-menu/dropdown-menu.component';
-import { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
+import { AppIconComponent } from '@/app/shared/components/icons/app-icon.component';
+import { CompanyDisplayComponent } from '@/app/shared/components/company-display/company-display.component';
+import { MessageListSkeletonComponent } from '@/app/shared/components/skeletons/message-list-skeleton.component';
+import { AnnouncementListSkeletonComponent } from '@/app/shared/components/skeletons/announcement-list-skeleton.component';
+import { DropdownMenuComponent } from '@/app/shared/components/dropdown-menu/dropdown-menu.component';
+import { RichTextEditorComponent } from '@/app/shared/components/rich-text-editor/rich-text-editor.component';
 
-import { ClickOutsideDirective } from './directives/click-outside.directive';
+import { ClickOutsideDirective } from '@/app/shared/directives/click-outside.directive';
+import { HighlightSearchPipe } from '@/app/shared/pipes/highlight-search.pipe';
 
 @NgModule({
     imports: [
@@ -16,7 +17,8 @@ import { ClickOutsideDirective } from './directives/click-outside.directive';
         CompanyDisplayComponent,
         MessageListSkeletonComponent,
         RichTextEditorComponent,
-        ClickOutsideDirective
+        ClickOutsideDirective,
+        HighlightSearchPipe
     ],
     declarations: [
         AnnouncementListSkeletonComponent,
@@ -29,7 +31,8 @@ import { ClickOutsideDirective } from './directives/click-outside.directive';
         AnnouncementListSkeletonComponent,
         DropdownMenuComponent,
         RichTextEditorComponent,
-        ClickOutsideDirective
+        ClickOutsideDirective,
+        HighlightSearchPipe
     ]
 })
 export class SharedModule { }

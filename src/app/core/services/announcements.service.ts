@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { delay, map } from 'rxjs/operators';
-import { Announcement } from '../models';
-import { announcementsData } from '../mock/announcements.data';
+import { Announcement } from '@/app/core/models';
+import { announcementsData } from '@/app/core/data/announcements.mock';
 
 @Injectable({
     providedIn: 'root'

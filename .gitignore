@@ -1,1 +1,20 @@
-node_modules
+# Standard Angular gitignore
+node_modules/
+.angular/
+dist/
+out-tsc/
+tmp/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.log
+
+# Build logs
+build_log.txt
+
+# Temporary files
+*.tmp
+.gemini/
+.antigravity/

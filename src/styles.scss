@@ -5,6 +5,30 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+    .btn-primary {
+        @apply px-6 py-2 bg-unicredit-primary text-white rounded font-bold uppercase hover:bg-unicredit-primary-hover transition-colors outline-none cursor-pointer;
+        font-family: 'UniCredit', sans-serif;
+        font-size: 14px;
+    }
+
+    .btn-secondary {
+        @apply px-6 py-2 border border-unicredit-text rounded bg-white hover:bg-gray-50 text-unicredit-text font-bold uppercase transition-colors outline-none cursor-pointer;
+        font-family: 'UniCredit', sans-serif;
+        font-size: 14px;
+    }
+
+    .btn-ghost {
+        @apply p-2 rounded hover:bg-gray-100 text-unicredit-text-secondary transition-colors outline-none cursor-pointer flex items-center justify-center;
+    }
+
+    .btn-error {
+        @apply px-6 py-2 bg-unicredit-error text-white rounded font-bold uppercase hover:opacity-90 transition-colors outline-none cursor-pointer;
+        font-family: 'UniCredit', sans-serif;
+        font-size: 14px;
+    }
+}
+
 /* Global Scrollbar Styles (replicated from React) */
 .message-list-scrollbar::-webkit-scrollbar,
 .hover-scrollbar::-webkit-scrollbar,
@@ -22,6 +46,7 @@
 .hover-scrollbar::-webkit-scrollbar-thumb,
 .composer-scrollbar::-webkit-scrollbar-thumb {
     background: #ccc;
+    /* Using hex as var isn't always reliable in scrollbars */
     border-radius: 3px;
 }
 

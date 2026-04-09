@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { mockRecipients, Recipient } from '../data/companies.mock';
+import { mockRecipients, Recipient } from '@/app/core/data/companies.mock';
 
 export interface ParticipantCompanyMapping {
     name: string;

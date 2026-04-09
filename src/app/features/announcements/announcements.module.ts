@@ -6,6 +6,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { ClickOutsideDirective } from '../../shared/directives/click-outside.directive';
 import { CheckboxComponent } from '@/app/shared/components/checkbox/checkbox.component';
 import { CompanyDisplayComponent } from '@/app/shared/components/company-display/company-display.component';
+import { ListHeaderComponent } from '@/app/shared/components/list-header/list-header.component';
 
 import { AnnouncementsComponent } from './announcements.component';
 import { AnnouncementListComponent } from './announcement-list/announcement-list.component';
@@ -35,7 +36,9 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         CheckboxComponent,
         CompanyDisplayComponent,
-        FilterPanelComponent
+        CompanyDisplayComponent,
+        FilterPanelComponent,
+        ListHeaderComponent
     ],
     exports: [AnnouncementsComponent]
 })

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { delay, map } from 'rxjs/operators';
-import { Message, ConversationData, FilterOptions } from '../models';
-import { mockMessages } from '../mock/messages.data';
-import { conversationsData } from '../mock/conversations.data';
-import { NotificationService } from './notification.service';
-import { isSystemMessage, ConversationMessage } from '../models';
+import { Message, ConversationData, FilterOptions } from '@/app/core/models';
+import { mockMessages } from '@/app/core/data/messages.mock';
+import { conversationsData } from '@/app/core/data/conversations.mock';
+import { NotificationService } from '@/app/core/services/notification.service';
+import { isSystemMessage, ConversationMessage } from '@/app/core/models';
 
 @Injectable({
     providedIn: 'root'

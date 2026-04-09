@@ -2,8 +2,8 @@ import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ViewC
 import { Message, ConversationData, FilterOptions } from '@/app/core/models';
 import { FilterService } from '@/app/core/services/filter.service';
 import { highlightText } from '@/app/core/utils/search.utils';
-import { conversationsData } from '@/app/core/mock/conversations.data';
-import { members as mockMembers } from '@/app/core/mock/filter.data';
+import { conversationsData } from '@/app/core/data/conversations.mock';
+import { members as mockMembers } from '@/app/core/data/filter.mock';
 import { parseISO, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 
 @Component({
@@ -15,98 +15,25 @@ import { parseISO, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
       [class.w-0]="isCollapsed"
     >
       <!-- Inner Content -->
-      <div class="w-[390px] h-full flex flex-col bg-white border-r border-[#e6e6e6]">
+      <div class="w-[390px] h-full flex flex-col bg-white border-r border-unicredit-gray">
       
 
       <!-- Search & Filters Header -->
-      <div class="p-3 border-b border-[#e6e6e6]">
-        <div class="flex gap-3 items-center mb-3">
-          <!-- Search Input -->
-          <div class="flex-1 relative">
-            <div class="absolute left-3 top-1/2 -translate-y-1/2 text-[#262626]">
-              <app-icon name="search" size="18"></app-icon>
-            </div>
-            <input
-              type="text"
-              placeholder="Search"
-              [ngModel]="searchQuery"
-              (ngModelChange)="searchChange.emit($event)"
-              class="w-full pl-10 pr-9 py-1.5 text-sm border border-[#ccc] rounded bg-white focus:outline-none focus:border-[#007a91]"
-            />
-            <button
-                *ngIf="searchQuery"
-                (click)="searchChange.emit('')"
-                class="absolute right-3 top-1/2 -translate-y-1/2 hover:opacity-80 transition-opacity text-[#262626]"
-            >
-                <app-icon name="search-close" size="14"></app-icon>
-            </button>
-          </div>
-
-          <!-- Filter Button Area -->
-          <div class="flex items-center gap-2">
-              <button 
-                  (click)="isFilterOpen = !isFilterOpen"
-                  class="flex items-center justify-center p-2 rounded transition-colors outline-none border-0 bg-transparent hover:bg-transparent shadow-none focus:ring-0"
-                  [class.text-[#007a91]]="isFilterOpen || filterService.activeFilterCount > 0"
-                  [class.text-[#262626]]="!isFilterOpen && filterService.activeFilterCount === 0"
-              >
-                <app-icon name="filter" size="18"></app-icon>
-              </button>
-              
-              <!-- Filter Badge -->
-              <div *ngIf="filterService.activeFilterCount > 0"
-                   class="flex h-[24px] px-[8px] justify-center items-center gap-[4px] rounded-[42px] bg-[#007A91] cursor-pointer hover:bg-[#006577] transition-colors"
-                   (click)="clearFilters($event)"
-                   title="Clear filters"
-              >
-                  <span class="text-white text-center text-[16px] font-[700] uppercase" style="font-family: 'UniCredit'; line-height: normal;">{{ filterService.activeFilterCount }}</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M11.6314 1.3125L7 5.9439L2.36824 1.3125L1.3125 2.3686L5.9439 7L1.3125 11.6314L2.36824 12.6875L7 8.0561L11.6314 12.6875L12.6875 11.6314L8.0561 7L12.6875 2.3686L11.6314 1.3125Z" fill="white"/>
-                  </svg>
-              </div>
-          </div>
-        </div>
-
-        <!-- Folder Selection -->
-        <div class="relative flex items-center justify-between pb-1" [ngClass]="isFolderDropdownOpen ? '' : 'border-b border-[#ccc]'" clickOutside (clickOutside)="isFolderDropdownOpen = false">
-          <div class="flex items-center gap-2 cursor-pointer group outline-none" (click)="isFolderDropdownOpen = !isFolderDropdownOpen">
-              <span class="text-xl font-bold text-[#262626] group-hover:text-[#007a91] transition-colors" [class.text-[#007a91]]="isFolderDropdownOpen">
-                  {{ selectedFolder }}
-              </span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" class="transition-transform duration-200" [class.rotate-180]="isFolderDropdownOpen" [attr.stroke]="(isFolderDropdownOpen ? '#007a91' : '#262626')">
-                  <path d="M6 9l6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-          </div>
-
-          <div class="text-sm">
-            <span class="font-bold">{{ folderUnreadCount }}</span>
-            <span class="text-[#666]">/{{ folderTotalCount }} unread</span>
-          </div>
-
-          <!-- Folder Dropdown Content -->
-          <div *ngIf="isFolderDropdownOpen" class="absolute top-full left-0 right-0 mt-1 bg-white rounded-[4px] shadow-lg border border-[#262626] z-50 flex flex-col">
-              <div class="flex flex-col py-2">
-                  <div 
-                      *ngFor="let folder of ['All Folders', 'Inbox', 'Drafts', 'Deleted Items']" 
-                      (click)="tempSelectedFolder = folder"
-                      class="flex items-center px-4 py-3 cursor-pointer hover:bg-gray-50 self-stretch gap-2 transition-colors"
-                  >
-                      <div class="flex items-start justify-center w-6 h-6 shrink-0">
-                          <svg *ngIf="tempSelectedFolder !== folder" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10.5" fill="white" stroke="#262626" /></svg>
-                          <svg *ngIf="tempSelectedFolder === folder" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10.5" fill="white" stroke="#262626" /><circle cx="12" cy="12" r="6" fill="#007a91" /></svg>
-                      </div>
-                      <span class="text-[#262626] font-bold text-base capitalize">{{ folder }}</span>
-                  </div>
-              </div>
-              
-              <!-- Buttons -->
-              <div class="flex items-center justify-between w-full px-4 pb-4 pt-2">
-                  <button (click)="isFolderDropdownOpen = false" class="px-6 py-2 border border-[#262626] rounded bg-white hover:bg-gray-50 text-[#262626] font-bold uppercase transition-colors outline-none cursor-pointer" style="font-family: 'UniCredit', sans-serif; font-size: 14px;">Cancel</button>
-                  <button (click)="selectFolder(tempSelectedFolder); isFolderDropdownOpen = false" class="px-6 py-2 bg-[#007a91] text-white rounded font-bold uppercase hover:bg-[#006577] transition-colors outline-none cursor-pointer" style="font-family: 'UniCredit', sans-serif; font-size: 14px;">Apply</button>
-              </div>
-          </div>
-        </div>
-      </div>
+      <app-list-header
+          [searchQuery]="searchQuery"
+          (searchQueryChange)="searchChange.emit($event)"
+          [placeholder]="'Search'"
+          [showFilterButton]="true"
+          [isFilterOpen]="isFilterOpen"
+          [activeFilterCount]="filterService.activeFilterCount"
+          (filterToggle)="isFilterOpen = !isFilterOpen"
+          (clearFilters)="clearFilters()"
+          [folders]="['All Folders', 'Inbox', 'Drafts', 'Deleted Items']"
+          [selectedFolder]="selectedFolder"
+          (folderChange)="selectFolder($event)"
+          [folderUnreadCount]="folderUnreadCount"
+          [folderTotalCount]="folderTotalCount"
+      ></app-list-header>
 
       <!-- Content Area -->
       <div *ngIf="isFilterOpen" class="flex-1 h-full overflow-hidden bg-white">
@@ -124,35 +51,26 @@ import { parseISO, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
       <div *ngIf="!isFilterOpen && !isLoading" class="flex-1 flex flex-col h-full overflow-hidden">
          
           <!-- Selection Header -->
-          <div *ngIf="selectedFolder !== 'All Folders'" class="px-3 h-[46px] bg-white border-b border-[#ccc] flex items-center shrink-0">
+          <div *ngIf="selectedFolder !== 'All Folders'" class="px-3 h-[46px] bg-white border-b border-unicredit-gray-divider flex items-center shrink-0">
                <div class="flex items-center justify-between w-full">
                  <div class="flex items-center gap-2">
                     <app-checkbox [checked]="selectAll" (checkedChange)="handleSelectAll()"></app-checkbox>
-                    <span style="
-                        color: #262626;
-                        font-family: 'UniCredit', sans-serif;
-                        font-size: 14px;
-                        font-style: normal;
-                        font-weight: 700;
-                        line-height: normal;
-                        text-transform: uppercase;
-                        font-feature-settings: 'liga' off, 'clig' off;
-                    ">
+                    <span class="text-unicredit-text font-bold text-sm uppercase">
                        {{ selectedItems.size > 0 ? selectedItems.size + ' SELECTED' : 'ALL' }}
                     </span>
                  </div>
                  
                  <div *ngIf="selectedItems.size > 0">
                      <app-dropdown-menu>
-                          <button trigger class="flex items-center gap-1 outline-none group uppercase text-[#007a91] font-bold text-sm">
+                          <button trigger class="flex items-center gap-1 outline-none group uppercase text-unicredit-primary font-bold text-sm">
                               ACTIONS
-                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" class="transition-transform group-data-[state=open]:-rotate-180"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 4.98881C2.10103 4.33706 3.07641 4.33706 3.678 4.98881L6 7.34884L8.322 4.98881C8.92359 4.33706 9.89841 4.33706 10.5 4.98881L6 9.5625L1.5 4.98881Z" fill="#007A91" /></svg>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" class="transition-transform group-data-[state=open]:-rotate-180"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 4.98881C2.10103 4.33706 3.07641 4.33706 3.678 4.98881L6 7.34884L8.322 4.98881C8.92359 4.33706 9.89841 4.33706 10.5 4.98881L6 9.5625L1.5 4.98881Z" fill="currentColor" /></svg>
                           </button>
                            <div items class="flex flex-col min-w-[200px] py-1">
                                 <!-- Conditional Actions based on Folder -->
                                 <ng-container [ngSwitch]="selectedFolder">
                                     <ng-container *ngSwitchCase="'Deleted Items'">
-                                         <button (click)="handleBulkAction('restore')" class="text-left px-4 py-3 hover:bg-[#e7f8fb] text-sm text-[#262626] font-bold uppercase transition-colors outline-none h-11 flex items-center gap-2">
+                                         <button (click)="handleBulkAction('restore')" class="text-left px-4 py-3 hover:bg-unicredit-primary-light text-sm text-unicredit-text font-bold uppercase transition-colors outline-none h-11 flex items-center gap-2">
                                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.6764 8.0543L12.9485 8.06282C13.0515 9.48135 12.5475 10.883 11.5632 11.9102C9.64429 13.913 6.45648 13.9834 4.45714 12.0672C2.45812 10.1506 2.39287 6.96286 4.31182 4.96004C6.23082 2.95793 9.41826 2.88726 11.4176 4.80347C11.4946 4.877 11.5638 4.9571 11.6362 5.03521L10.4605 5.05603C9.7844 5.05923 9.28536 5.94909 9.30525 6.41623L12.9358 6.39815L14.2536 6.391L14.1942 4.98851L14.0457 1.50317C13.5806 1.50561 12.7578 2.00473 12.7864 2.6848L12.8311 3.78305C12.759 3.70706 12.6911 3.62686 12.6149 3.55398C9.92796 0.97845 5.64366 1.07217 3.0645 3.76446C0.484914 6.45572 0.572221 10.7412 3.25985 13.3166C5.94715 15.8925 10.2314 15.7981 12.8102 13.1062C14.1063 11.7544 14.7777 9.91989 14.6764 8.0543" fill="currentColor"/>
                                              </svg>
@@ -161,7 +79,7 @@ import { parseISO, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
                                     </ng-container>
 
                                    <ng-container *ngSwitchCase="'Drafts'">
-                                        <button (click)="handleBulkAction('delete')" class="text-left px-4 py-3 hover:bg-[#e7f8fb] text-sm text-[#262626] font-bold uppercase transition-colors outline-none flex items-center gap-2">
+                                        <button (click)="handleBulkAction('delete')" class="text-left px-4 py-3 hover:bg-unicredit-primary-light text-sm text-unicredit-text font-bold uppercase transition-colors outline-none flex items-center gap-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                                               <path fill-rule="evenodd" clip-rule="evenodd" d="M9.5 1H12.523C13.508 1 14 2 14 2.5V3H2V2.5C2 2 2.492 1 3.477 1H6.5L7 0H9L9.5 1ZM4.84017 16C4.32017 16 3.88667 15.6015 3.84367 15.083L2.92017 4H12.9202L11.9962 15.083C11.9532 15.6015 11.5202 16 11.0002 16H4.84017Z" fill="currentColor"/>
                                             </svg>
@@ -170,7 +88,7 @@ import { parseISO, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
                                    </ng-container>
 
                                    <ng-container *ngSwitchDefault>
-                                        <button (click)="handleBulkAction('markRead')" *ngIf="hasUnreadInSelection" class="text-left px-4 py-3 hover:text-[#007a91] text-sm text-[#262626] font-bold uppercase transition-colors outline-none flex items-center gap-2">
+                                        <button (click)="handleBulkAction('markRead')" *ngIf="hasUnreadInSelection" class="text-left px-4 py-3 hover:text-unicredit-primary text-sm text-unicredit-text font-bold uppercase transition-colors outline-none flex items-center gap-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                                               <path d="M16 12.4385C16 13.9296 15.0058 14.9238 13.5146 14.9238H0V8.07422L7.95312 13.542L16 8.07422V12.4385ZM15.2598 7.02051L7.95312 12.04L0.646484 7.02051L7.95312 2L15.2598 7.02051Z" fill="currentColor"/>
                                             </svg>
@@ -282,9 +200,7 @@ export class MessageListComponent implements OnChanges, OnInit {
     @Output() restoreMessages = new EventEmitter<string[]>();
 
     selectedFolder = 'Inbox';
-    tempSelectedFolder = 'Inbox';
     filteredMessages: Message[] = [];
-    isFolderDropdownOpen = false;
     isFilterOpen = false;
 
     selectedItems = new Set<string>();

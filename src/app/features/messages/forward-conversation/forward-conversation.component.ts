@@ -1,9 +1,17 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MessagesService } from '@/app/core/services/messages.service';
 import { ParticipantService } from '@/app/core/services/participant.service';
-import { mockRecipients, Recipient } from '../../../core/data/companies.mock';
+import { mockRecipients, Recipient } from '@/app/core/data/companies.mock';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Title } from '@angular/platform-browser';
 import { Message, ConversationItem, ConversationMessage, isSystemMessage } from '@/app/core/models';
+import { ClickOutsideDirective } from '@/app/shared/directives/click-outside.directive';
+import { AppIconComponent } from '@/app/shared/components/icons/app-icon.component';
+import { RichTextEditorComponent } from '@/app/shared/components/rich-text-editor/rich-text-editor.component';
+import { AttachmentStripComponent } from '@/app/shared/components/attachment-strip/attachment-strip.component';
+
 
 export interface ForwardDraft {
     id: string;
@@ -14,15 +22,13 @@ export interface ForwardDraft {
     updatedAt: Date;
 }
 
-interface TextFormat {
-    bold: boolean;
-    italic: boolean;
-    underline: boolean;
-    strikethrough: boolean;
-}
+// Adapter for Recipient interface match
+// The shared component expects Recipient interface which matches ours but good to be explicit
+import { RecipientPickerComponent } from '@/app/shared/components/recipient-picker/recipient-picker.component';
 
 @Component({
     selector: 'app-forward-conversation',
+    standalone: true,
     template: `
     <div class="h-full flex flex-col bg-white overflow-hidden">
         <!-- 1. Header Title -->
@@ -54,52 +60,15 @@ interface TextFormat {
                      </button>
                      
                      <!-- PICKER POPOVER -->
-                     <div *ngIf="showRecipientPicker" class="absolute top-full left-0 mt-2 w-[340px] bg-white shadow-2xl border border-[#ccc] rounded z-[100] flex flex-col h-[320px] animate-fadeIn">
-                           <!-- Header Search -->
-                           <div class="p-3 border-b border-[#eee]">
-                               <div class="relative">
-                                   <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                                   </div>
-                                   <input [(ngModel)]="pickerSearchQuery" placeholder="Search" class="w-full pl-9 pr-3 py-2 border border-[#ccc] rounded text-sm outline-none focus:border-[#007a91] text-[#262626]">
-                               </div>
-                           </div>
-                           
-                           <!-- List -->
-                           <div class="flex-1 overflow-y-auto hover-scrollbar">
-                               <div *ngFor="let r of getFilteredPickerRecipients()" 
-                                    (click)="togglePickerSelection(r.id)"
-                                    class="flex items-center gap-3 px-4 py-3 hover:bg-[#e7f8fb] cursor-pointer border-b border-[#f5f5f5] transition-colors">
-                                   
-                                   <!-- Checkbox Custom -->
-                                   <div class="w-5 h-5 border border-[#262626] bg-white rounded flex items-center justify-center transition-all shrink-0">
-                                        <svg *ngIf="isRecipientSelectedInPicker(r.id)" width="12" height="10" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M1 5L4.5 8.5L11 1.5" stroke="#007A91" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                                        </svg>
-                                   </div>
-                                   
-                                   <!-- Icon -->
-                                   <div class="shrink-0 mt-0.5">
-                                       <app-icon [name]="getRecipientIcon(r)" size="18"></app-icon>
-                                   </div>
-                                   
-                                   <!-- Name + Role -->
-                                   <div class="text-sm text-[#262626] leading-tight flex-1">
-                                       <span class="font-bold mr-1">{{ r.name }}</span>
-                                       <span *ngIf="r.role" class="text-[#666] font-normal">| {{ r.role }}</span>
-                                   </div>
-                               </div>
-                           </div>
-
-                           <!-- Footer -->
-                           <div class="p-4 border-t border-[#eee] flex items-center justify-between bg-white shrink-0">
-                               <button (click)="closePicker()" class="px-6 py-2 border border-[#262626] rounded text-[#262626] font-bold text-sm hover:bg-gray-50 uppercase transition-colors" style="font-family: 'UniCredit';">CANCEL</button>
-                               <div class="flex items-center gap-6">
-                                   <span class="font-bold text-sm text-[#262626]">{{ tempSelectedRecipients.size }} selected</span>
-                                   <button (click)="applyPickerSelection()" class="px-6 py-2 bg-[#007a91] rounded text-white font-bold text-sm hover:bg-[#006577] uppercase transition-colors shadow-md" style="font-family: 'UniCredit';">APPLY</button>
-                               </div>
-                           </div>
-                     </div>
+                     <!-- PICKER POPOVER -->
+                     <app-recipient-picker
+                        *ngIf="showRecipientPicker"
+                        [recipients]="recipients"
+                        [initialSelectedIds]="selectedRecipientIds"
+                        (apply)="onPickerApply($event)"
+                        (cancel)="showRecipientPicker = false"
+                        class="absolute top-full left-0 mt-2 z-[100]"
+                     ></app-recipient-picker>
                  </div>
                 
                 <div class="flex flex-wrap gap-2 items-center flex-1">
@@ -179,50 +148,25 @@ interface TextFormat {
                        <div class="text-[#262626] leading-relaxed break-words whitespace-pre-wrap text-sm" [innerHTML]="msg.content"></div>
 
                        <!-- Attachments Section -->
-                       <div *ngIf="msg.attachments?.length" class="mt-3 flex flex-wrap gap-3 items-stretch">
-                            <div *ngFor="let att of msg.attachments" class="flex items-center gap-3 p-2 rounded border border-[#CCC] bg-white min-w-[200px] max-w-[300px]">
-                                <div class="shrink-0">
-                                    <app-icon [name]="att.category === 'image' ? 'file-image' : 'file-document'" size="16"></app-icon>
-                                </div>
-                                <div class="flex flex-col min-w-0">
-                                    <span class="text-[#262626] font-bold text-sm uppercase truncate" [title]="att.name" style="font-family: 'UniCredit'; line-height: normal;">
-                                        {{ att.name }}
-                                    </span>
-                                    <div class="flex items-center gap-2 text-[#262626] text-sm" style="font-family: 'UniCredit'; line-height: 24px;">
-                                        <span>{{ att.type }}</span>
-                                        <div class="w-px h-3 bg-[#ccc]"></div>
-                                        <span>{{ att.size }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                       </div>
+                       <app-attachment-strip 
+                           [attachments]="msg.attachments || []"
+                           class="mt-3 block"
+                       ></app-attachment-strip>
                   </div>
              </div>
         </div>
 
         <!-- 4. Editor Area (Fixed) -->
         <div class="flex-shrink-0 border-t border-[#e6e6e6] bg-white p-6 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-30">
-            <!-- Toolbar + Textarea -->
-            <div class="border border-[#ccc] rounded bg-white flex flex-col mb-4 transition-all focus-within:border-[#007a91] focus-within:ring-1 focus-within:ring-[#007a91]">
-                <!-- Toolbar -->
-                <div class="flex items-center gap-1 px-3 py-2 border-b border-[#ccc] bg-gray-50 overflow-x-auto">
-                    <button (click)="toggleFormat('bold')" [class.bg-gray-300]="textFormat.bold" class="p-1.5 hover:bg-gray-200 rounded transition-colors"><span class="font-bold text-sm">B</span></button>
-                    <button (click)="toggleFormat('italic')" [class.bg-gray-300]="textFormat.italic" class="p-1.5 hover:bg-gray-200 rounded transition-colors"><span class="italic text-sm">I</span></button>
-                    <button (click)="toggleFormat('underline')" [class.bg-gray-300]="textFormat.underline" class="p-1.5 hover:bg-gray-200 rounded transition-colors"><span class="underline text-sm">U</span></button>
-                    <div class="w-px h-6 bg-gray-300 mx-2"></div>
-                    <button (click)="insertBulletList()" class="p-1.5 hover:bg-gray-200 rounded transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="4" r="1.5" fill="#666"/><circle cx="3" cy="8" r="1.5" fill="#666"/><circle cx="3" cy="12" r="1.5" fill="#666"/><line x1="6" y1="4" x2="14" y2="4" stroke="#666" stroke-width="1.5"/><line x1="6" y1="8" x2="14" y2="8" stroke="#666" stroke-width="1.5"/><line x1="6" y1="12" x2="14" y2="12" stroke="#666" stroke-width="1.5"/></svg></button>
-                </div>
-                
-                <!-- Textarea (Fixed Height ~5 lines approx 120px) -->
-                <textarea
-                    #messageBody
-                    [(ngModel)]="body"
-                    (input)="onBodyInput()"
-                    (keydown)="handleKeydown($event)"
-                    placeholder="Type your message"
-                    class="w-full px-4 py-3 resize-none focus:outline-none text-sm text-[#262626] leading-relaxed"
-                    style="height: 120px; overflow-y: auto;"
-                ></textarea>
+            <!-- Rich Text Editor -->
+            <div class="mb-4">
+                <app-rich-text-editor
+                    [content]="body"
+                    [showToolbar]="true"
+                    [placeholder]="'Type your message'"
+                    (contentChange)="onBodyChange($event)"
+                    (attachmentClick)="attachFile()">
+                </app-rich-text-editor>
             </div>
 
             <!-- Footer Buttons -->
@@ -272,28 +216,11 @@ interface TextFormat {
         .animate-fade-in {
             animation: fade-in 0.3s ease-out;
         }
-
-        textarea::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        textarea::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        textarea::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 3px;
-        }
-
-        textarea::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-    `]
+    `],
+    imports: [CommonModule, FormsModule, AppIconComponent, ClickOutsideDirective, RichTextEditorComponent, RecipientPickerComponent, AttachmentStripComponent]
 })
-export class ForwardConversationComponent implements OnInit, AfterViewInit {
+export class ForwardConversationComponent implements OnInit {
     @ViewChild('recipientInput') recipientInputRef!: ElementRef<HTMLInputElement>;
-    @ViewChild('messageBody') messageBodyRef!: ElementRef<HTMLTextAreaElement>;
 
     @Input() messageId: string | null = null;
 
@@ -315,20 +242,6 @@ export class ForwardConversationComponent implements OnInit, AfterViewInit {
     // Form fields
     subject = '';
     body = '';
-    fontSize = '14';
-
-    // Rich text formatting
-    textFormat: TextFormat = {
-        bold: false,
-        italic: false,
-        underline: false,
-        strikethrough: false
-    };
-
-    // Auto-grow textarea
-    textareaHeight = 100;
-    maxTextareaHeight = 200;
-    lineHeight = 20;
 
     // State
     isDirty = false;
@@ -356,9 +269,6 @@ export class ForwardConversationComponent implements OnInit, AfterViewInit {
         }
     }
 
-    ngAfterViewInit() {
-        // Fixed height, no adjustment needed
-    }
 
     loadConversation() {
         // Fetch original message details
@@ -458,99 +368,13 @@ export class ForwardConversationComponent implements OnInit, AfterViewInit {
     }
 
     // Rich text editor methods
-    toggleFormat(format: keyof TextFormat) {
-        this.textFormat[format] = !this.textFormat[format];
+    onBodyChange(content: string) {
+        this.body = content;
         this.markAsDirty();
-    }
-
-    insertHighlight() {
-        this.markAsDirty();
-    }
-
-    insertBulletList() {
-        const textarea = this.messageBodyRef?.nativeElement;
-        if (textarea) {
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const selectedText = this.body.substring(start, end);
-            const lines = selectedText.split('\n');
-            const bulletList = lines.map(line => `• ${line}`).join('\n');
-
-            this.body = this.body.substring(0, start) + bulletList + this.body.substring(end);
-            this.markAsDirty();
-
-            setTimeout(() => {
-                textarea.selectionStart = start;
-                textarea.selectionEnd = start + bulletList.length;
-                textarea.focus();
-            }, 0);
-        }
-    }
-
-    insertNumberedList() {
-        const textarea = this.messageBodyRef?.nativeElement;
-        if (textarea) {
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const selectedText = this.body.substring(start, end);
-            const lines = selectedText.split('\n');
-            const numberedList = lines.map((line, index) => `${index + 1}. ${line}`).join('\n');
-
-            this.body = this.body.substring(0, start) + numberedList + this.body.substring(end);
-            this.markAsDirty();
-
-            setTimeout(() => {
-                textarea.selectionStart = start;
-                textarea.selectionEnd = start + numberedList.length;
-                textarea.focus();
-            }, 0);
-        }
-    }
-
-    insertLink() {
-        const url = prompt('Enter URL:');
-        if (url) {
-            const textarea = this.messageBodyRef?.nativeElement;
-            if (textarea) {
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
-                const selectedText = this.body.substring(start, end) || url;
-                const link = `[${selectedText}](${url})`;
-
-                this.body = this.body.substring(0, start) + link + this.body.substring(end);
-                this.markAsDirty();
-            }
-        }
     }
 
     attachFile() {
         alert('File attachment functionality would be implemented here');
-    }
-
-    // Auto-grow textarea
-    onBodyInput() {
-        this.markAsDirty();
-    }
-
-
-
-    handleKeydown(event: KeyboardEvent) {
-        if (event.ctrlKey || event.metaKey) {
-            switch (event.key.toLowerCase()) {
-                case 'b':
-                    event.preventDefault();
-                    this.toggleFormat('bold');
-                    break;
-                case 'i':
-                    event.preventDefault();
-                    this.toggleFormat('italic');
-                    break;
-                case 'u':
-                    event.preventDefault();
-                    this.toggleFormat('underline');
-                    break;
-            }
-        }
     }
 
     // Utility methods
@@ -648,46 +472,14 @@ export class ForwardConversationComponent implements OnInit, AfterViewInit {
     }
     // Picker Logic
     showRecipientPicker = false;
-    pickerSearchQuery = '';
-    tempSelectedRecipients = new Set<string>();
 
     toggleRecipientPicker() {
         this.showRecipientPicker = !this.showRecipientPicker;
-        if (this.showRecipientPicker) {
-            this.pickerSearchQuery = '';
-            // Initialize temp set with current selection
-            this.tempSelectedRecipients = new Set(this.selectedRecipientIds);
-        }
     }
 
-    isRecipientSelectedInPicker(id: string): boolean {
-        return this.tempSelectedRecipients.has(id);
-    }
-
-    togglePickerSelection(id: string) {
-        if (this.tempSelectedRecipients.has(id)) {
-            this.tempSelectedRecipients.delete(id);
-        } else {
-            this.tempSelectedRecipients.add(id);
-        }
-    }
-
-    getFilteredPickerRecipients() {
-        const query = this.pickerSearchQuery.toLowerCase();
-        return this.recipients.filter(r =>
-            !query ||
-            r.name.toLowerCase().includes(query) ||
-            r.role.toLowerCase().includes(query)
-        );
-    }
-
-    applyPickerSelection() {
-        this.selectedRecipientIds = Array.from(this.tempSelectedRecipients);
+    onPickerApply(selectedIds: string[]) {
+        this.selectedRecipientIds = selectedIds;
         this.markAsDirty();
-        this.showRecipientPicker = false;
-    }
-
-    closePicker() {
         this.showRecipientPicker = false;
     }
 }

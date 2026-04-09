@@ -1,0 +1,3 @@
+rg -n "<svg" comm-suite-react\\src -g "*.ts" -g "*.tsx" | rg -v "icons.registry.ts"
+
+(no matches)

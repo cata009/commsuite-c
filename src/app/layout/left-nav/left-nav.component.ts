@@ -3,11 +3,11 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-left-nav',
   template: `
-    <div class="w-[68px] h-full flex flex-col items-center py-4 bg-[#f5f5f5] border-r border-[#e6e6e6] gap-2">
+    <div class="w-[68px] h-full flex flex-col items-center py-4 bg-unicredit-gray-lighter border-r border-unicredit-gray gap-2">
       <ng-container *ngFor="let item of navItems">
             <div class="relative w-full flex justify-center py-1">
                 <!-- Vertical Indicator - 2.5px width with rounded ends -->
-                <div *ngIf="rla.isActive" class="absolute left-[2px] top-0 bottom-0 w-[2.5px] bg-[#007a91] rounded-full"></div>
+                <div *ngIf="rla.isActive" class="absolute left-[2px] top-0 bottom-0 w-[2.5px] bg-unicredit-primary rounded-full"></div>
                 
                 <a
                     [routerLink]="['/' + item.id]"
@@ -15,7 +15,7 @@ import { Component } from '@angular/core';
                     #rla="routerLinkActive"
                     [attr.title]="item.label"
                     class="w-10 h-10 flex items-center justify-center transition-colors"
-                    [ngClass]="rla.isActive ? 'text-[#007a91]' : 'text-[#666666] hover:text-[#007a91]'"
+                    [ngClass]="rla.isActive ? 'text-unicredit-primary' : 'text-unicredit-text-secondary hover:text-unicredit-primary'"
                 >
                     <app-icon 
                         [name]="item.icon" 
@@ -28,7 +28,7 @@ import { Component } from '@angular/core';
       <div class="mt-auto flex flex-col gap-4 items-center mb-2">
          <div class="relative w-full flex justify-center py-1">
               <!-- Vertical Indicator - 2.5px width with rounded ends -->
-              <div *ngIf="rlaSettings.isActive" class="absolute left-[2px] top-0 bottom-0 w-[2.5px] bg-[#007a91] rounded-full"></div>
+              <div *ngIf="rlaSettings.isActive" class="absolute left-[2px] top-0 bottom-0 w-[2.5px] bg-unicredit-primary rounded-full"></div>
               
               <a 
                  routerLink="/settings"
@@ -36,15 +36,15 @@ import { Component } from '@angular/core';
                  #rlaSettings="routerLinkActive"
                  title="Settings"
                  class="w-10 h-10 flex items-center justify-center transition-colors"
-                 [ngClass]="rlaSettings.isActive ? 'text-[#007a91]' : 'text-[#666666] hover:text-[#007a91]'"
+                 [ngClass]="rlaSettings.isActive ? 'text-unicredit-primary' : 'text-unicredit-text-secondary hover:text-unicredit-primary'"
               >
                  <app-icon name="settings" [isActive]="rlaSettings.isActive"></app-icon>
               </a>
           </div>
           
           <!-- User Profile -->
-          <div class="w-7 h-7 rounded-full bg-[#e5e5e5] flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity" title="User Profile">
-             <span class="text-xs font-bold text-[#262626]">ES</span>
+          <div class="w-7 h-7 rounded-full bg-unicredit-gray flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity" title="User Profile">
+             <span class="text-xs font-bold text-unicredit-text">ES</span>
           </div>
       </div>
     </div>

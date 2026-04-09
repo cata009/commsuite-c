@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-2 bg-unicredit-primary text-white rounded font-bold uppercase hover:bg-unicredit-primary-hover transition-colors outline-none cursor-pointer;
+    font-family: 'UniCredit', sans-serif;
+    font-size: 14px;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-2 border border-unicredit-text rounded bg-white hover:bg-gray-50 text-unicredit-text font-bold uppercase transition-colors outline-none cursor-pointer;
+    font-family: 'UniCredit', sans-serif;
+    font-size: 14px;
+  }
+
+  .btn-ghost {
+    @apply p-2 rounded hover:bg-gray-100 text-unicredit-text-secondary transition-colors outline-none cursor-pointer flex items-center justify-center;
+  }
+
+  .btn-error {
+    @apply px-6 py-2 bg-unicredit-error text-white rounded font-bold uppercase hover:opacity-90 transition-colors outline-none cursor-pointer;
+    font-family: 'UniCredit', sans-serif;
+    font-size: 14px;
+  }
+}
+
+/* Global Scrollbar Styles (replicated from Angular) */
+.message-list-scrollbar::-webkit-scrollbar,
+.hover-scrollbar::-webkit-scrollbar,
+.composer-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.message-list-scrollbar::-webkit-scrollbar-track,
+.hover-scrollbar::-webkit-scrollbar-track,
+.composer-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.message-list-scrollbar::-webkit-scrollbar-thumb,
+.hover-scrollbar::-webkit-scrollbar-thumb,
+.composer-scrollbar::-webkit-scrollbar-thumb {
+  background: #ccc;
+  /* Using hex as var isn't always reliable in scrollbars */
+  border-radius: 3px;
+}
+
+.message-list-scrollbar::-webkit-scrollbar-thumb:hover,
+.hover-scrollbar::-webkit-scrollbar-thumb:hover,
+.composer-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* Global default - apply thin hover scrollbar to ALL scrollable elements */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+*:hover {
+  scrollbar-color: rgba(180, 180, 180, 0.5) transparent;
+}
+
+/* WebKit browsers (Chrome, Edge, Safari) - Global */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+*:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(180, 180, 180, 0.6);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(150, 150, 150, 0.8);
+}
+
+/* Specific class for scrollable containers */
+.hover-scrollbar,
+.message-list-scrollbar {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.hover-scrollbar:hover,
+.message-list-scrollbar:hover {
+  scrollbar-color: rgba(180, 180, 180, 0.6) transparent;
+}
+
+.hover-scrollbar::-webkit-scrollbar,
+.message-list-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.hover-scrollbar::-webkit-scrollbar-track,
+.message-list-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.hover-scrollbar::-webkit-scrollbar-thumb,
+.message-list-scrollbar::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 3px;
+}
+
+.hover-scrollbar:hover::-webkit-scrollbar-thumb,
+.message-list-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(180, 180, 180, 0.6);
+}
+
+/* Composer textarea scrollbar - always visible but subtle */
+.composer-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #d4d4d4 transparent;
+}
+
+.composer-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.composer-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.composer-scrollbar::-webkit-scrollbar-thumb {
+  background: #d4d4d4;
+  border-radius: 2px;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.animate-slideDown {
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { mockCompanies, mockRecipients, Company, Recipient } from '../../../core/data/companies.mock';
+import { mockCompanies, mockRecipients, Company, Recipient } from '@/app/core/data/companies.mock';
 
 export interface MessageDraft {
     id: string;
@@ -9,13 +9,6 @@ export interface MessageDraft {
     subject: string;
     body: string;
     updatedAt: Date;
-}
-
-interface TextFormat {
-    bold: boolean;
-    italic: boolean;
-    underline: boolean;
-    strikethrough: boolean;
 }
 
 @Component({
@@ -246,135 +239,13 @@ interface TextFormat {
 
             <!-- Rich Text Editor Area -->
             <div class="mb-6">
-                <div class="border border-[#ccc] rounded">
-                    <!-- Toolbar -->
-                    <div class="flex items-center gap-1 px-3 py-2 border-b border-[#ccc] bg-gray-50">
-                        <select [(ngModel)]="fontSize" class="px-2 py-1 border border-[#ccc] rounded text-sm bg-white">
-                            <option value="12">12</option>
-                            <option value="14" selected>14</option>
-                            <option value="16">16</option>
-                            <option value="18">18</option>
-                            <option value="20">20</option>
-                        </select>
-                        
-                        <div class="w-px h-6 bg-gray-300 mx-1"></div>
-                        
-                        <button
-                            (click)="toggleFormat('bold')"
-                            [class.bg-gray-300]="textFormat.bold"
-                            class="p-1.5 hover:bg-gray-200 rounded transition-colors"
-                            title="Bold"
-                        >
-                            <span class="font-bold text-sm">B</span>
-                        </button>
-                        
-                        <button
-                            (click)="toggleFormat('italic')"
-                            [class.bg-gray-300]="textFormat.italic"
-                            class="p-1.5 hover:bg-gray-200 rounded transition-colors"
-                            title="Italic"
-                        >
-                            <span class="italic text-sm">I</span>
-                        </button>
-                        
-                        <button
-                            (click)="toggleFormat('underline')"
-                            [class.bg-gray-300]="textFormat.underline"
-                            class="p-1.5 hover:bg-gray-200 rounded transition-colors"
-                            title="Underline"
-                        >
-                            <span class="underline text-sm">U</span>
-                        </button>
-                        
-                        <button
-                            (click)="toggleFormat('strikethrough')"
-                            [class.bg-gray-300]="textFormat.strikethrough"
-                            class="p-1.5 hover:bg-gray-200 rounded transition-colors"
-                            title="Strikethrough"
-                        >
-                            <span class="line-through text-sm">S</span>
-                        </button>
-                        
-                        <div class="w-px h-6 bg-gray-300 mx-1"></div>
-                        
-                        <button
-                            (click)="insertHighlight()"
-                            class="p-1.5 hover:bg-gray-200 rounded transition-colors"
-                            title="Highlight"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <rect x="2" y="12" width="12" height="3" fill="#FFEB3B"/>
-                                <path d="M4 2L12 2L12 12L4 12Z" stroke="#666" stroke-width="1.5" fill="none"/>
-                            </svg>
-                        </button>
-                        
-                        <button
-                            (click)="insertBulletList()"
-                            class="p-1.5 hover:bg-gray-200 rounded transition-colors"
-                            title="Bullet List"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <circle cx="3" cy="4" r="1.5" fill="#666"/>
-                                <circle cx="3" cy="8" r="1.5" fill="#666"/>
-                                <circle cx="3" cy="12" r="1.5" fill="#666"/>
-                                <line x1="6" y1="4" x2="14" y2="4" stroke="#666" stroke-width="1.5"/>
-                                <line x1="6" y1="8" x2="14" y2="8" stroke="#666" stroke-width="1.5"/>
-                                <line x1="6" y1="12" x2="14" y2="12" stroke="#666" stroke-width="1.5"/>
-                            </svg>
-                        </button>
-                        
-                        <button
-                            (click)="insertNumberedList()"
-                            class="p-1.5 hover:bg-gray-200 rounded transition-colors"
-                            title="Numbered List"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <text x="1" y="5" font-size="5" fill="#666">1.</text>
-                                <text x="1" y="9" font-size="5" fill="#666">2.</text>
-                                <text x="1" y="13" font-size="5" fill="#666">3.</text>
-                                <line x1="6" y1="4" x2="14" y2="4" stroke="#666" stroke-width="1.5"/>
-                                <line x1="6" y1="8" x2="14" y2="8" stroke="#666" stroke-width="1.5"/>
-                                <line x1="6" y1="12" x2="14" y2="12" stroke="#666" stroke-width="1.5"/>
-                            </svg>
-                        </button>
-                        
-                        <div class="w-px h-6 bg-gray-300 mx-1"></div>
-                        
-                        <button
-                            (click)="insertLink()"
-                            class="p-1.5 hover:bg-gray-200 rounded transition-colors"
-                            title="Insert Link"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <path d="M6.5 8.5L9.5 5.5M4 11L5.5 9.5M11 4L9.5 5.5M8.5 10.5C7.5 11.5 5.5 11.5 4.5 10.5C3.5 9.5 3.5 7.5 4.5 6.5L6 5M10 11L11.5 9.5C12.5 8.5 12.5 6.5 11.5 5.5C10.5 4.5 8.5 4.5 7.5 5.5L6 7" stroke="#666" stroke-width="1.5" fill="none"/>
-                            </svg>
-                        </button>
-                        
-                        <button
-                            (click)="attachFile()"
-                            class="p-1.5 hover:bg-gray-200 rounded transition-colors"
-                            title="Attach File"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <path d="M11 2L5 8C4 9 4 10.5 5 11.5C6 12.5 7.5 12.5 8.5 11.5L13 7C14.5 5.5 14.5 3 13 1.5C11.5 0 9 0 7.5 1.5L3 6C1 8 1 11 3 13C5 15 8 15 10 13L14 9" stroke="#666" stroke-width="1.5" fill="none"/>
-                            </svg>
-                        </button>
-                    </div>
-                    
-                    <!-- Editor Area with Auto-grow -->
-                    <textarea
-                        #messageBody
-                        [(ngModel)]="body"
-                        (input)="onBodyInput()"
-                        (keydown)="handleKeydown($event)"
-                        placeholder="Type your message"
-                        class="w-full px-3 py-3 resize-none focus:outline-none text-sm"
-                        [style.fontSize.px]="fontSize"
-                        [style.height.px]="textareaHeight"
-                        [style.maxHeight.px]="maxTextareaHeight"
-                        [style.overflowY]="textareaHeight >= maxTextareaHeight ? 'auto' : 'hidden'"
-                    ></textarea>
-                </div>
+                <app-rich-text-editor
+                    [content]="body"
+                    [showToolbar]="true"
+                    [placeholder]="'Type your message'"
+                    (contentChange)="onBodyChange($event)"
+                    (attachmentClick)="attachFile()">
+                </app-rich-text-editor>
             </div>
         </div>
 
@@ -483,28 +354,10 @@ interface TextFormat {
         .animate-fade-in {
             animation: fade-in 0.3s ease-out;
         }
-
-        textarea::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        textarea::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        textarea::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 3px;
-        }
-
-        textarea::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
     `]
 })
-export class NewMessageComponent implements OnInit, AfterViewInit {
+export class NewMessageComponent implements OnInit {
     @ViewChild('recipientInput') recipientInputRef!: ElementRef<HTMLInputElement>;
-    @ViewChild('messageBody') messageBodyRef!: ElementRef<HTMLTextAreaElement>;
 
     companies = mockCompanies;
     recipients = mockRecipients;
@@ -532,20 +385,6 @@ export class NewMessageComponent implements OnInit, AfterViewInit {
     // Form fields
     subject = '';
     body = '';
-    fontSize = '14';
-
-    // Rich text formatting
-    textFormat: TextFormat = {
-        bold: false,
-        italic: false,
-        underline: false,
-        strikethrough: false
-    };
-
-    // Auto-grow textarea
-    textareaHeight = 100;
-    maxTextareaHeight = 200; // ~5 lines at 14px font
-    lineHeight = 20;
 
     // State
     isDirty = false;
@@ -558,9 +397,6 @@ export class NewMessageComponent implements OnInit, AfterViewInit {
         this.filteredCompanies = [...this.companies];
     }
 
-    ngAfterViewInit() {
-        this.adjustTextareaHeight();
-    }
 
     // Company methods
     toggleCompanyPicker() {
@@ -715,107 +551,13 @@ export class NewMessageComponent implements OnInit, AfterViewInit {
     }
 
     // Rich text editor methods
-    toggleFormat(format: keyof TextFormat) {
-        this.textFormat[format] = !this.textFormat[format];
+    onBodyChange(content: string) {
+        this.body = content;
         this.markAsDirty();
-    }
-
-    insertHighlight() {
-        this.markAsDirty();
-    }
-
-    insertBulletList() {
-        const textarea = this.messageBodyRef?.nativeElement;
-        if (textarea) {
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const selectedText = this.body.substring(start, end);
-            const lines = selectedText.split('\n');
-            const bulletList = lines.map(line => `• ${line}`).join('\n');
-
-            this.body = this.body.substring(0, start) + bulletList + this.body.substring(end);
-            this.markAsDirty();
-
-            setTimeout(() => {
-                textarea.selectionStart = start;
-                textarea.selectionEnd = start + bulletList.length;
-                textarea.focus();
-            }, 0);
-        }
-    }
-
-    insertNumberedList() {
-        const textarea = this.messageBodyRef?.nativeElement;
-        if (textarea) {
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const selectedText = this.body.substring(start, end);
-            const lines = selectedText.split('\n');
-            const numberedList = lines.map((line, index) => `${index + 1}. ${line}`).join('\n');
-
-            this.body = this.body.substring(0, start) + numberedList + this.body.substring(end);
-            this.markAsDirty();
-
-            setTimeout(() => {
-                textarea.selectionStart = start;
-                textarea.selectionEnd = start + numberedList.length;
-                textarea.focus();
-            }, 0);
-        }
-    }
-
-    insertLink() {
-        const url = prompt('Enter URL:');
-        if (url) {
-            const textarea = this.messageBodyRef?.nativeElement;
-            if (textarea) {
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
-                const selectedText = this.body.substring(start, end) || url;
-                const link = `[${selectedText}](${url})`;
-
-                this.body = this.body.substring(0, start) + link + this.body.substring(end);
-                this.markAsDirty();
-            }
-        }
     }
 
     attachFile() {
         alert('File attachment functionality would be implemented here');
-    }
-
-    // Auto-grow textarea
-    onBodyInput() {
-        this.markAsDirty();
-        this.adjustTextareaHeight();
-    }
-
-    adjustTextareaHeight() {
-        const textarea = this.messageBodyRef?.nativeElement;
-        if (textarea) {
-            textarea.style.height = 'auto';
-            const scrollHeight = textarea.scrollHeight;
-            this.textareaHeight = Math.max(100, Math.min(scrollHeight, this.maxTextareaHeight));
-        }
-    }
-
-    handleKeydown(event: KeyboardEvent) {
-        if (event.ctrlKey || event.metaKey) {
-            switch (event.key.toLowerCase()) {
-                case 'b':
-                    event.preventDefault();
-                    this.toggleFormat('bold');
-                    break;
-                case 'i':
-                    event.preventDefault();
-                    this.toggleFormat('italic');
-                    break;
-                case 'u':
-                    event.preventDefault();
-                    this.toggleFormat('underline');
-                    break;
-            }
-        }
     }
 
     // Form methods

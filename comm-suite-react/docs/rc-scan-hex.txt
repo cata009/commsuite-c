@@ -1,0 +1,184 @@
+rg -n "#[0-9A-Fa-f]{3,8}" comm-suite-react\\src
+
+comm-suite-react\\src\styles\tokens.css:5:  --background: #ffffff;
+comm-suite-react\\src\styles\tokens.css:7:  --card: #ffffff;
+comm-suite-react\\src\styles\tokens.css:11:  --primary: #030213;
+comm-suite-react\\src\styles\tokens.css:14:  --secondary-foreground: #030213;
+comm-suite-react\\src\styles\tokens.css:15:  --muted: #ececf0;
+comm-suite-react\\src\styles\tokens.css:16:  --muted-foreground: #717182;
+comm-suite-react\\src\styles\tokens.css:17:  --accent: #e9ebef;
+comm-suite-react\\src\styles\tokens.css:18:  --accent-foreground: #030213;
+comm-suite-react\\src\styles\tokens.css:19:  --destructive: #d4183d;
+comm-suite-react\\src\styles\tokens.css:20:  --destructive-foreground: #ffffff;
+comm-suite-react\\src\styles\tokens.css:23:  --input-background: #f3f3f5;
+comm-suite-react\\src\styles\tokens.css:24:  --switch-background: #cbced4;
+comm-suite-react\\src\styles\tokens.css:36:  --sidebar-primary: #030213;
+comm-suite-react\\src\styles\tokens.css:42:  --important: #E67300;
+comm-suite-react\\src\styles\tokens.css:43:  --informative: #007a91;
+comm-suite-react\\src\styles\tokens.css:44:  --recalled: #909090;
+comm-suite-react\\src\styles\globals.css:45:  background: #ccc;
+comm-suite-react\\src\styles\globals.css:53:  background: #999;
+comm-suite-react\\src\styles\globals.css:128:  scrollbar-color: #d4d4d4 transparent;
+comm-suite-react\\src\styles\globals.css:140:  background: #d4d4d4;
+comm-suite-react\\src\shared\icons\icons.registry.ts:21:  'radio-unchecked': `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10.5" fill="white" stroke="#262626" /></svg>`,
+comm-suite-react\\src\shared\icons\icons.registry.ts:22:  'radio-checked': `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10.5" fill="white" stroke="#262626" /><circle cx="12" cy="12" r="6" fill="#007a91" /></svg>`,
+comm-suite-react\\src\shared\icons\icons.registry.ts:50:  'unicredit-logo': `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 16.1513L0 7.90576V19.5H20.0002C22.209 19.5 24 17.709 24 15.5003V7.90651L12 16.1513Z" fill="#666666"/><path fill-rule="evenodd" clip-rule="evenodd" d="M0 4.5V5.904L12 14.1495L24 5.904V4.5H0Z" fill="#e2001a"/></svg>`,
+comm-suite-react\\src\shared\icons\icons.registry.ts:64:  'empty-conversation': `<svg xmlns="http://www.w3.org/2000/svg" width="110" height="83" viewBox="0 0 110 83" fill="none"><path d="M80.5241 72.173H30.3591C28.5223 72.1727 26.7608 71.4429 25.462 70.1441C24.1632 68.8453 23.4334 67.0838 23.4331 65.247V14.811H102.866C104.703 14.811 106.465 15.5406 107.764 16.8395C109.063 18.1383 109.793 19.9 109.793 21.737V72.173H96.6831V82.303L80.5241 72.173Z" fill="#E5E5E5"/><path d="M13.111 57.358H6.846C5.03024 57.3577 3.28893 56.6362 2.00509 55.3522C0.721241 54.0682 -1.93655e-08 52.3268 0 50.511L0 0H79.517C81.3328 -1.93655e-08 83.0742 0.721241 84.3582 2.00509C85.6422 3.28893 86.3637 5.03024 86.364 6.846V57.358H29.278L13.111 67.493V57.358Z" fill="#CCCCCC"/></svg>`,
+comm-suite-react\\src\shared\icons\icons.registry.ts:65:  'empty-announcement': `<svg xmlns="http://www.w3.org/2000/svg" width="109" height="109" viewBox="0 0 109 109" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M72.6294 18.2085C78.6882 14.7304 86.2913 19.0321 86.2913 25.9436V40.5321C88.0806 40.5321 89.8524 40.8795 91.5056 41.5543C93.1587 42.2292 94.6608 43.2184 95.926 44.4654C97.1913 45.7124 98.1949 47.1928 98.8796 48.8221C99.5644 50.4514 99.9168 52.1977 99.9168 53.9612C99.9168 55.7248 99.5644 57.471 98.8796 59.1003C98.1949 60.7296 97.1913 62.21 95.926 63.457C94.6608 64.704 93.1587 65.6932 91.5056 66.3681C89.8524 67.043 88.0806 67.3903 86.2913 67.3903V80.8194C86.2913 88.1965 77.7481 92.4087 71.7574 87.9816L62.4012 81.0611C57.3998 77.3656 51.5767 74.8981 45.4146 73.8631V86.5939C45.4151 89.5203 44.3423 92.3483 42.3939 94.5564C40.4454 96.7646 37.7528 98.2042 34.8122 98.6098C31.8717 99.0154 28.8815 98.3597 26.3928 96.7636C23.9042 95.1674 22.0848 92.7384 21.2702 89.9243L14.1395 65.3222C11.5734 62.3356 9.90346 58.7027 9.31733 54.8319C8.73121 50.9612 9.25214 47.006 10.8216 43.411C12.391 39.8161 14.9467 36.7238 18.2015 34.4818C21.4562 32.2399 25.2809 30.9371 29.2457 30.7199L42.953 29.9679C49.6597 29.6007 56.182 27.6692 61.9833 24.3322L72.6294 18.2085ZM25.5849 72.2158L30.0042 87.4668C30.2168 88.205 30.6933 88.8425 31.3457 89.2615C31.998 89.6804 32.7822 89.8526 33.5533 89.7462C34.3244 89.6398 35.0304 89.2621 35.541 88.6827C36.0515 88.1032 36.3321 87.3613 36.3309 86.5939V73.1201L29.2457 72.7306C28.0132 72.6574 26.7889 72.4852 25.5849 72.2158ZM90.8331 53.9612C90.8331 52.774 90.3546 51.6354 89.5029 50.796C88.6511 49.9565 87.4959 49.4849 86.2913 49.4849V58.4376C87.4959 58.4376 88.6511 57.966 89.5029 57.1265C90.3546 56.287 90.8331 55.1484 90.8331 53.9612Z" fill="#CCCCCC" /></svg>`,
+comm-suite-react\\src\shared\components\RichTextEditor\RichTextEditor.tsx:64:  const [currentColor, setCurrentColor] = useState('#262626')
+comm-suite-react\\src\shared\components\RichTextEditor\RichTextEditor.tsx:80:      '#262626',
+comm-suite-react\\src\shared\components\RichTextEditor\RichTextEditor.tsx:81:      '#007A91',
+comm-suite-react\\src\shared\components\RichTextEditor\RichTextEditor.tsx:82:      '#D32F2F',
+comm-suite-react\\src\shared\components\RichTextEditor\RichTextEditor.tsx:83:      '#388E3C',
+comm-suite-react\\src\shared\components\RichTextEditor\RichTextEditor.tsx:84:      '#F57C00',
+comm-suite-react\\src\shared\components\RichTextEditor\RichTextEditor.tsx:85:      '#7B1FA2',
+comm-suite-react\\src\shared\components\RichTextEditor\RichTextEditor.tsx:86:      '#000000',
+comm-suite-react\\src\shared\components\RichTextEditor\RichTextEditor.tsx:87:      '#1976D2',
+comm-suite-react\\src\shared\components\RichTextEditor\RichTextEditor.tsx:93:    () => ['#FFFF00', '#00FF00', '#00FFFF', '#FF00FF', '#FF0000', '#E0E0E0', '#FFFFFF'],
+comm-suite-react\\src\shared\components\RichTextEditor\RichTextEditor.tsx:388:                className="absolute inset-0 z-50 bg-white/90 flex flex-col items-center justify-center border-2 border-dashed border-[#007a91] m-2 rounded"
+comm-suite-react\\src\shared\components\RichTextEditor\RichTextEditor.tsx:399:                  className="text-[#007a91] mb-2 pointer-events-none"
+comm-suite-react\\src\shared\components\RichTextEditor\RichTextEditor.tsx:401:                <span className="text-[#007a91] font-bold text-lg pointer-events-none">
+comm-suite-react\\src\shared\components\RichTextEditor\RichTextEditor.tsx:669:            className={`w-11 h-11 rounded-full bg-[#007a91] hover:bg-[#006577] flex items-center justify-center transition-all duration-200 ease-out shrink-0 mb-[2px] active:scale-95 shadow-md hover:shadow-lg ${
+comm-suite-react\\src\app\shared\DropdownMenu.tsx:75:          className={`absolute ${sideClass} origin-top-right bg-white border border-[#262626] rounded-[4px] shadow-2xl z-50 ring-1 ring-black ring-opacity-5 focus:outline-none backdrop-blur-sm ${
+comm-suite-react\\src\app\shared\CompanyDisplay.tsx:17:  const baseClasses = `${textSize} ${fontWeight} text-[#262626] uppercase transition-colors hover:text-[#007a91]`
+comm-suite-react\\src\app\shared\Checkbox.tsx:16:      className="w-5 h-5 border border-[#262626] bg-white rounded flex items-center justify-center cursor-pointer transition-colors"
+comm-suite-react\\src\app\shared\Checkbox.tsx:19:      {checked ? <AppIcon name="checkmark-stroke" size={12} className="text-[#007A91]" /> : null}
+comm-suite-react\\src\app\core\logic\search.utils.ts:1:export function highlightText(text: string | undefined | null, query?: string, highlightClass = 'bg-[#BFEBF3]'): string {
+comm-suite-react\\src\app\layout\Notification.tsx:17:    <div className="fixed top-[88px] right-[24px] z-[9999] inline-flex flex-col p-[24px] gap-[12px] rounded-[4px] bg-[#CF3524] shadow-lg max-w-[450px]">
+comm-suite-react\\src\app\layout\AppShell.tsx:19:      className={`flex flex-col min-w-[1024px] overflow-hidden bg-white text-[#262626] font-sans ${
+comm-suite-react\\src\app\layout\AppHeader.tsx:21:          <AppIcon name="header-minus" size={16} className="text-[#262626]" />
+comm-suite-react\\src\app\layout\AppHeader.tsx:24:          <AppIcon name="header-close" size={16} className="text-[#262626]" />
+comm-suite-react\\src\shared\components\AttachmentStrip\AttachmentStrip.tsx:91:          className={`absolute right-0 origin-top-right bg-white border border-[#262626] rounded-[4px] shadow-2xl z-50 ring-1 ring-black ring-opacity-5 focus:outline-none backdrop-blur-sm ${
+comm-suite-react\\src\shared\components\AttachmentStrip\AttachmentStrip.tsx:155:              <div className="w-5 h-5 border-2 border-[#007a91] border-t-transparent rounded-full animate-spin"></div>
+comm-suite-react\\src\shared\components\AttachmentStrip\AttachmentStrip.tsx:243:                      <div className="w-4 h-4 border-2 border-[#007a91] border-t-transparent rounded-full animate-spin"></div>
+comm-suite-react\\src\app\features\messages\MessageListPanel.tsx:292:                                className="text-left px-4 py-3 hover:text-[#007a91] text-sm text-[#262626] font-bold uppercase transition-colors outline-none flex items-center gap-2"
+comm-suite-react\\src\app\features\messages\MessageListPanel.tsx:300:                              className="text-left px-4 py-3 hover:text-[#007a91] text-sm text-[#262626] font-bold uppercase transition-colors outline-none flex items-center gap-2"
+comm-suite-react\\src\app\features\messages\MessageListPanel.tsx:319:                  className={`px-3 py-3 border-b border-[#ccc] cursor-pointer transition-colors ${
+comm-suite-react\\src\app\features\messages\MessageListPanel.tsx:320:                    selectedMessageId === message.id ? 'bg-[#e7f8fb]' : 'hover:bg-gray-50'
+comm-suite-react\\src\app\features\messages\MessageListPanel.tsx:340:                        <span className="text-xs text-[#262626] font-normal shrink-0">
+comm-suite-react\\src\app\features\messages\MessageListPanel.tsx:361:                          className={`text-sm text-[#262626] truncate flex-1 ${
+comm-suite-react\\src\app\features\messages\MessageListPanel.tsx:372:                              message.isEntered ? 'bg-[#666]' : 'bg-[#e2001a]'
+comm-suite-react\\src\app\host\CorporateShell.tsx:9:    <div className="flex flex-col min-h-screen bg-[#f7f7f7] text-[#262626]">
+comm-suite-react\\src\app\host\CorporateShell.tsx:12:          <div className="w-8 h-8 rounded-full bg-[#e6e6e6] flex items-center justify-center">
+comm-suite-react\\src\app\features\messages\TodoMessagesSection.tsx:34:            className="flex items-center gap-1 text-[#007A91] hover:opacity-80 transition-opacity shrink-0 outline-none"
+comm-suite-react\\src\app\features\messages\TodoMessagesSection.tsx:48:            <AppIcon name={isExpanded ? 'chevron-up' : 'chevron-down'} size={16} className="text-[#007A91]" />
+comm-suite-react\\src\app\features\messages\TodoMessageCard.tsx:16:      className="flex items-center gap-3 px-3 py-2 rounded border border-[#007A91] bg-[#E7F8FB] cursor-pointer hover:bg-[#d4f1f6] transition-colors min-w-0"
+comm-suite-react\\src\app\features\messages\TodoMessageCard.tsx:20:      <div className="shrink-0 text-[#262626]">
+comm-suite-react\\src\app\features\messages\TodoMessageCard.tsx:25:        className="shrink-0 text-[#262626] uppercase font-bold"
+comm-suite-react\\src\app\features\messages\TodoMessageCard.tsx:32:        className="flex-1 truncate text-[#262626]"
+comm-suite-react\\src\app\features\messages\TodoMessageCard.tsx:40:        className="shrink-0 text-[#262626]"
+comm-suite-react\\src\app\features\messages\TodoMessageCard.tsx:49:            className="shrink-0 p-1 transition-colors flex items-center justify-center hover:text-[#007a91] text-[#262626]"
+comm-suite-react\\src\app\features\messages\TodoMessageCard.tsx:63:              className="uppercase font-bold text-[#262626]"
+comm-suite-react\\src\app\features\messages\TodoMessageCard.tsx:74:            <div className="text-[#262626]">
+comm-suite-react\\src\app\features\messages\TodoMessageCard.tsx:78:              className="uppercase font-bold text-[#262626]"
+comm-suite-react\\src\app\features\messages\MessagesPage.tsx:107:      <div className="flex items-center justify-between border-b border-[#e6e6e6] bg-white min-h-[73px] px-3 py-4 pr-[calc(100%-390px+12px)]">
+comm-suite-react\\src\app\features\messages\MessagesPage.tsx:109:          className="text-[26px] font-bold text-[#262626]"
+comm-suite-react\\src\app\features\messages\MessagesPage.tsx:120:          className="flex items-center gap-1.5 px-4 py-1.5 bg-[#007a91] hover:bg-[#006577] text-white rounded transition-colors text-sm font-bold uppercase outline-none cursor-pointer"
+comm-suite-react\\src\app\features\messages\MessagesPage.tsx:155:                  ? 'bg-[#007a91] hover:bg-[#006577]'
+comm-suite-react\\src\app\features\messages\MessagesPage.tsx:165:                className={isMessageListCollapsed ? 'text-white' : 'text-[#262626]'}
+comm-suite-react\\src\app\features\messages\MessagesPage.tsx:182:            <div className="absolute left-0 top-0 bottom-0 w-px bg-[#e6e6e6] z-0 pointer-events-none"></div>
+comm-suite-react\\src\app\host\CommSuiteModal.tsx:95:          <AppIcon name="header-close" size={16} className="text-[#262626]" />
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:199:      <div className="px-6 py-4 border-b border-[#e6e6e6] flex-shrink-0 bg-white">
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:202:            color: 'var(--primary-k-10262626-text, #262626)',
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:216:            <span className="text-sm text-[#909090] shrink-0">Companies</span>
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:217:            <span className="text-sm font-bold text-[#262626] truncate" title={getAllCompanies()}>
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:224:      <div className="px-6 py-4 border-b border-[#e6e6e6] flex-shrink-0 bg-white relative z-20">
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:230:                showRecipientPicker ? 'text-[#007a91]' : 'text-[#262626]'
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:264:                className="flex items-center gap-2 px-2 py-1 bg-[#F5F5F5] border border-[#E6E6E6] rounded-[4px]"
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:267:                <span className="text-[#262626] text-sm font-medium">
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:272:                  className="text-[#666] hover:text-[#d32f2f] flex items-center justify-center"
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:295:            <div className="absolute top-full left-[40px] mt-1 w-[300px] z-50 bg-white border border-[#ccc] rounded shadow-lg max-h-60 overflow-y-auto">
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:300:                  className="w-full text-left px-4 py-2 hover:bg-[#e7f8fb] transition-colors relative flex items-start gap-3"
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:306:                    <div className="text-sm font-medium text-[#262626]">{recipient.name}</div>
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:309:                      <div className="text-xs text-[#E91E63] font-medium mt-0.5">
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:321:          <span className="text-sm font-bold text-[#262626]">Subject:</span>
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:322:          <span className="text-sm text-[#262626]">{subject}</span>
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:326:      <div className="flex-1 overflow-y-auto px-6 py-4 bg-[#e5e5e5] hover-scrollbar flex flex-col gap-3">
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:334:                msg.isOwn ? 'bg-white border-[#007a91]' : 'bg-[#f5f5f5] border-[#909090]'
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:338:                <span className={`font-bold ${msg.isOwn ? 'text-[#007a91]' : 'text-[#262626]'}`}>
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:342:                  <span className="text-[#262626] uppercase font-bold text-xs">
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:349:                <div className="mb-3 p-4 flex flex-col gap-2 rounded bg-white border border-[#007A91] self-stretch">
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:351:                    <span className="text-[#262626] text-sm font-bold uppercase">
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:354:                    <span className="text-[#666] text-xs">{msg.replyTo.timestamp}</span>
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:357:                    className="text-[#262626] text-sm opacity-90 break-words whitespace-pre-wrap line-clamp-2"
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:364:                className="text-[#262626] leading-relaxed break-words whitespace-pre-wrap text-sm"
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:385:      <div className="flex-shrink-0 border-t border-[#e6e6e6] bg-white p-6 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-30">
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:407:            className="px-6 py-2 border border-[#262626] text-[#262626] font-bold rounded hover:bg-gray-50 uppercase text-sm transition-colors"
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:416:              className="text-[#007a91] font-bold uppercase text-sm hover:underline disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed transition-colors"
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:424:              className="px-8 py-2 bg-[#007a91] text-white font-bold rounded hover:bg-[#006577] uppercase text-sm transition-all shadow-md hover:shadow-lg active:scale-95 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:shadow-none disabled:active:scale-100"
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:436:            <h3 className="text-xl font-bold text-[#262626] text-center mb-2">
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:439:            <p className="text-center text-[#666] mb-8">
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:445:                className="flex-1 py-2.5 border border-[#262626] font-bold text-[#262626] uppercase hover:bg-gray-50 rounded"
+comm-suite-react\\src\app\features\messages\ForwardConversation.tsx:451:                className="flex-1 py-2.5 bg-[#007a91] text-white font-bold uppercase hover:bg-[#006577] rounded"
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:534:                            ? 'bg-unicredit-ooo-bg hover:bg-[#F8BBD0]'
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:535:                            : 'bg-unicredit-gray-lighter hover:bg-[#ebebeb]'
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:560:                      className="flex items-center gap-2 mt-4 hover:opacity-80 transition-opacity text-[#007a91]"
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:581:                <button className="p-2 transition-colors duration-200 hover:text-[#007a91] text-[#262626] outline-none cursor-pointer">
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:589:                  className="flex items-center gap-2 px-3 py-3 cursor-pointer outline-none transition-colors hover:text-[#007a91] text-left w-full text-[#262626]"
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:598:                    className="flex items-center gap-2 px-3 py-3 cursor-pointer outline-none transition-colors hover:text-[#007a91] text-left w-full text-[#262626]"
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:607:                  className="flex items-center gap-2 px-3 py-3 cursor-pointer outline-none transition-colors hover:text-[#007a91] text-left w-full text-[#262626]"
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:613:                <button className="flex items-center gap-2 px-3 py-3 cursor-pointer outline-none transition-colors hover:text-[#007a91] text-left w-full text-[#262626]">
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:621:                    className="flex items-center gap-2 px-3 py-3 cursor-pointer outline-none transition-colors hover:text-[#007a91] text-left w-full text-[#262626]"
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:644:        <div className="bg-white border-b border-[#ccc] px-6 py-4 flex flex-col gap-4 animate-slideDown shadow-sm relative z-30">
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:650:                  showMemberPicker ? 'text-[#007a91]' : 'text-[#262626]'
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:694:                    className="flex items-center gap-2 px-2 py-1 bg-white border border-[#ccc] rounded-[4px]"
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:697:                    <span className="text-[#262626] text-sm font-medium">{member}</span>
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:700:                      className="text-[#666] hover:text-[#d32f2f] transition-colors"
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:722:                      <div className="absolute top-full left-0 mt-2 w-[400px] bg-white border border-[#ccc] rounded-[4px] shadow-lg max-h-[300px] overflow-y-auto z-50">
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:723:                        <div className="px-4 py-2 border-b border-[#e6e6e6]">
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:732:                            <div className="px-4 py-2 bg-gray-50 text-[10px] font-bold text-[#666] uppercase tracking-wider">
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:743:                                  <span className="font-bold text-sm text-[#262626]">{user.name}</span>
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:745:                                <div className="text-xs text-[#666] ml-6">{user.role}</div>
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:753:                            <div className="px-4 py-2 bg-gray-50 text-[10px] font-bold text-[#666] uppercase tracking-wider">
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:764:                                  <span className="font-bold text-sm text-[#262626]">{user.name}</span>
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:766:                                <div className="text-xs text-[#666] ml-6">{user.role}</div>
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:796:              <AppIcon name="warning-circle" size={80} className="text-[#EC6608]" />
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:800:              className="text-[#262626] text-center mb-1"
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:812:              className="text-[#262626] text-center mb-10"
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:826:                className="flex flex-col justify-center items-center py-[12px] w-[160px] bg-white text-[#262626] font-bold rounded-[4px] hover:bg-gray-50 border-2 border-[#262626]"
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:839:                className="flex flex-col justify-center items-center py-[12px] w-[160px] bg-[#007A91] text-white font-bold rounded-[4px] hover:bg-[#006577]"
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:870:                      <div className="h-px bg-[#007A91] flex-1"></div>
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:874:                            color: '#007A91',
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:887:                      <div className="h-px bg-[#007A91] flex-1"></div>
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:895:                      <div className="inline-flex px-4 py-2 justify-center items-center rounded border border-[#666] bg-[#e6e6e6]">
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:896:                        <span className="text-[#262626] text-center text-sm font-bold uppercase leading-[16px]">
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:901:                      <div className="inline-flex px-3 py-1.5 justify-center items-center rounded border border-[#007A91] bg-[#E7F8FB] max-w-[90%]">
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:902:                        <span className="text-[#262626] text-center text-sm leading-[16px]">
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:917:                        item.isOwn ? 'bg-white border-[#007a91]' : 'bg-[#f5f5f5] border-[#909090]'
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:918:                      } ${highlightedMessageId === item.id ? 'shadow-md ring-1 ring-[#007A91]' : ''}`}
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:921:                        <span className={`font-bold ${item.isOwn ? 'text-[#007a91]' : 'text-[#262626]'}`}>
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:927:                          <span className="text-[#262626] uppercase font-bold text-xs">{item.timestamp}</span>
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:929:                            <div className="text-[#262626]">
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:935:                              <button className="p-1 transition-colors duration-200 hover:text-[#007a91] text-[#262626] outline-none">
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:941:                              <button className="flex items-center gap-2 px-3 py-3 cursor-pointer outline-none transition-colors hover:text-[#007a91] text-left w-full text-[#262626]">
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:948:                                className="flex items-center gap-2 px-3 py-3 cursor-pointer outline-none transition-colors hover:text-[#007a91] text-left w-full text-[#262626]"
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:958:                                className="flex items-center gap-2 px-3 py-3 cursor-pointer outline-none transition-colors hover:text-[#007a91] text-left w-full text-[#262626]"
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:965:                                <button className="flex items-center gap-2 px-3 py-3 cursor-pointer outline-none transition-colors hover:text-[#007a91] text-left w-full text-[#262626]">
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:978:                          className="mb-3 p-4 flex flex-col gap-2 rounded bg-white border border-[#007A91] self-stretch cursor-pointer hover:bg-[#f0f9fb] transition-colors duration-200"
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:981:                            <span className="text-[#262626] text-sm font-bold uppercase">{item.replyTo.sender}</span>
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:982:                            <span className="text-[#666] text-xs">{item.replyTo.timestamp}</span>
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:985:                            className={`text-[#262626] text-sm opacity-90 transition-all duration-300 break-words whitespace-pre-wrap ${
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:996:                              className="flex items-center gap-1 text-[#007A91] text-xs font-bold uppercase mt-1 self-end hover:opacity-80 transition-opacity"
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:1005:                      <div className="text-[#262626] leading-relaxed rich-text-content break-words whitespace-pre-wrap cursor-text select-text">
+comm-suite-react\\src\app\features\messages\ConversationPanel.tsx:1046:            <AppIcon name="arrow-down" size={14} className="text-[#262626]" />
+comm-suite-react\\src\app\core\data\conversations.mock.ts:158:                content: '<font size="3" color="#e2001a">Yes Mario, it\'s 1.5% management and 20% performance over a 5% hurdle rate. Standard for this asset class, but we might be able to negotiate a rebate based on volume.</font>',
+comm-suite-react\\src\app\features\announcements\AnnouncementListPanel.tsx:146:        return 'bg-[#007a91]'
+comm-suite-react\\src\app\features\announcements\AnnouncementListPanel.tsx:148:        return 'bg-[#e2001a]'
+comm-suite-react\\src\app\features\announcements\AnnouncementListPanel.tsx:150:        return 'bg-[#666666]'
+comm-suite-react\\src\app\features\announcements\AnnouncementListPanel.tsx:152:        return 'bg-[#007a91]'
+comm-suite-react\\src\app\features\announcements\AnnouncementListPanel.tsx:211:                        <button className="flex items-center gap-1 outline-none group uppercase text-[#007a91] font-bold text-sm">
+comm-suite-react\\src\app\features\announcements\AnnouncementListPanel.tsx:225:                            className="text-left px-4 py-2 hover:bg-[#e7f8fb] text-sm text-[#262626] font-bold uppercase transition-colors outline-none h-11 flex items-center"
+comm-suite-react\\src\app\features\announcements\AnnouncementListPanel.tsx:235:                              className="text-left px-4 py-3 hover:text-[#007a91] text-sm text-[#262626] font-bold uppercase transition-colors outline-none flex items-center gap-2"
+comm-suite-react\\src\app\features\announcements\AnnouncementListPanel.tsx:242:                              className="text-left px-4 py-3 hover:text-[#007a91] text-sm text-[#262626] font-bold uppercase transition-colors outline-none flex items-center gap-2"
+comm-suite-react\\src\app\features\announcements\AnnouncementListPanel.tsx:247:                            <div className="h-px bg-[#e6e6e6] my-1"></div>
+comm-suite-react\\src\app\features\announcements\AnnouncementListPanel.tsx:250:                              className="text-left px-4 py-3 hover:text-[#e2001a] text-sm text-[#262626] font-bold uppercase transition-colors outline-none flex items-center gap-2"
+comm-suite-react\\src\app\features\announcements\AnnouncementListPanel.tsx:269:                  className={`border-b border-[#ccc] px-3 py-4 cursor-pointer transition-colors ${
+comm-suite-react\\src\app\features\announcements\AnnouncementListPanel.tsx:270:                    selectedAnnouncementId === announcement.id ? 'bg-[#e7f8fb]' : 'hover:bg-gray-50'
+comm-suite-react\\src\app\features\announcements\AnnouncementListPanel.tsx:290:                        <span className="text-xs text-[#262626] font-normal shrink-0">
+comm-suite-react\\src\app\features\announcements\AnnouncementListPanel.tsx:297:                          className={`text-base truncate text-[#262626] pr-2 ${
+comm-suite-react\\src\app\features\announcements\AnnouncementListPanel.tsx:312:                          className="text-sm text-[#262626] truncate flex-1 pr-2"
+comm-suite-react\\src\app\features\announcements\AnnouncementListPanel.tsx:342:          <AppIcon name="chevron-left" size={16} className="text-[#262626]" />
+comm-suite-react\\src\app\features\announcements\AnnouncementsPage.tsx:113:      <div className="flex items-center justify-between border-b border-[#e6e6e6] bg-white min-h-[73px] px-3 py-4 shrink-0 z-20 relative">
+comm-suite-react\\src\app\features\announcements\AnnouncementsPage.tsx:115:          className="text-[26px] font-bold text-[#262626]"
+comm-suite-react\\src\app\features\announcements\AnnouncementsPage.tsx:161:            <div className="absolute left-0 top-0 bottom-0 w-px bg-[#e6e6e6] z-0 pointer-events-none"></div>
+comm-suite-react\\src\app\features\announcements\AnnouncementsPage.tsx:168:            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-[30px] h-[30px] bg-[#007a91] shadow-[2px_2px_7px_0_rgba(0,0,0,0.25)] hover:bg-[#006577] flex items-center justify-center transition-colors z-[100]"

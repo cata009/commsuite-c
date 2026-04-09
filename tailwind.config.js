@@ -55,6 +55,21 @@ module.exports = {
                 recalled: "#666666",
                 'input-background': "var(--input-background)",
                 'switch-background': "var(--switch-background)",
+                unicredit: {
+                    primary: '#007a91',
+                    'primary-hover': '#006577',
+                    'primary-light': '#e7f8fb',
+                    text: '#262626',
+                    'text-secondary': '#666666',
+                    'text-muted': '#909090',
+                    gray: '#e6e6e6',
+                    'gray-divider': '#ccc',
+                    'gray-light': '#eee',
+                    'gray-lighter': '#f5f5f5',
+                    'ooo-bg': '#FCE4EC',
+                    'ooo-text': '#E91E63',
+                    error: '#e2001a',
+                }
             },
             borderRadius: {
                 lg: "var(--radius)",

@@ -4,22 +4,22 @@ import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { SharedModule } from './shared/shared.module';
-import { AppComponent } from './app.component';
-import { LeftNavComponent } from './layout/left-nav/left-nav.component';
-import { AppHeaderComponent } from './layout/app-header/app-header.component';
-import { ClickOutsideDirective } from './shared/directives/click-outside.directive';
-import { NotificationComponent } from './shared/components/notification/notification.component';
+import { SharedModule } from '@/app/shared/shared.module';
+import { AppComponent } from '@/app/app.component';
+import { LeftNavComponent } from '@/app/layout/left-nav/left-nav.component';
+import { AppHeaderComponent } from '@/app/layout/app-header/app-header.component';
+import { ClickOutsideDirective } from '@/app/shared/directives/click-outside.directive';
+import { NotificationComponent } from '@/app/shared/components/notification/notification.component';
 
 const routes: Routes = [
     { path: '', redirectTo: 'messages', pathMatch: 'full' },
     {
         path: 'messages',
-        loadChildren: () => import('./features/messages/messages.module').then(m => m.MessagesModule)
+        loadChildren: () => import('@/app/features/messages/messages.module').then(m => m.MessagesModule)
     },
     {
         path: 'announcements',
-        loadChildren: () => import('./features/announcements/announcements.module').then(m => m.AnnouncementsModule)
+        loadChildren: () => import('@/app/features/announcements/announcements.module').then(m => m.AnnouncementsModule)
     },
     // Simple check for settings route to avoid crash if clicked
     { path: 'settings', redirectTo: 'messages' },

@@ -3,20 +3,19 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 @Component({
   selector: 'app-header',
   template: `
-    <div class="bg-[#f5f5f5] px-5 py-1 flex items-center justify-between border-b border-[#e5e5e5]">
+    <div class="bg-unicredit-gray-lighter px-5 py-1 flex items-center justify-between border-b border-unicredit-gray">
       <div class="flex items-center gap-2.5">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path fill-rule="evenodd" clip-rule="evenodd" d="M12 16.1513L0 7.90576V19.5H20.0002C22.209 19.5 24 17.709 24 15.5003V7.90651L12 16.1513Z" fill="#666666"/>
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M0 4.5V5.904L12 14.1495L24 5.904V4.5H0Z" fill="#E2001A"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M0 4.5V5.904L12 14.1495L24 5.904V4.5H0Z" fill="#e2001a"/>
         </svg>
-        <h1 class="text-lg font-bold text-[#262626]">Communication Suite</h1>
+        <h1 class="text-lg font-bold text-unicredit-text">Communication Suite</h1>
       </div>
       
       <div class="flex items-center gap-2">
         <button class="w-10 h-10 flex items-center justify-center hover:bg-gray-200 rounded transition-colors" (click)="onNewMessage.emit()">
-          <!-- Native SVG for consistency with React code -->
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M0 9.25H16V6.75H0V9.25Z" fill="#262626"/>
+            <path d="M0 9.25H16V6.75H0V9.25" fill="#262626"/>
           </svg>
         </button>
         <button class="w-10 h-10 flex items-center justify-center hover:bg-gray-200 rounded transition-colors">

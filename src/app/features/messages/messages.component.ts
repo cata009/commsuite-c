@@ -12,10 +12,10 @@ import { Message } from '@/app/core/models';
         <h2 class="text-[26px] font-bold text-[#262626]" style="font-family: 'UniCredit'; line-height: normal; font-feature-settings: 'liga' off, 'clig' off;">Messages</h2>
         <button
           (click)="onNewMessage()"
-          class="flex items-center gap-1.5 px-4 py-1.5 bg-[#007a91] hover:bg-[#006577] text-white rounded transition-colors text-sm font-bold uppercase outline-none cursor-pointer"
+          class="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-unicredit-primary hover:bg-unicredit-primary-hover text-white rounded transition-colors text-sm font-bold uppercase outline-none cursor-pointer"
           style="font-family: 'UniCredit', sans-serif;"
         >
-          <app-icon name="new" size="16"></app-icon>
+          <app-icon name="new" size="16" class="flex items-center justify-center"></app-icon>
           <span>NEW</span>
         </button>
       </div>

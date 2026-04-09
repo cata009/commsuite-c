@@ -1,13 +1,19 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
-import { ConversationData, ConversationItem, ConversationMessage, isSystemMessage, SystemMessage } from '@/app/core/models';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
+
+import { ConversationData, ConversationItem, ConversationMessage, isSystemMessage, SystemMessage, Attachment } from '@/app/core/models';
 import { Router } from '@angular/router';
 import { MessagesService } from '@/app/core/services/messages.service';
 import { mockRecipients, Recipient } from '@/app/core/data/companies.mock';
 import { highlightText } from '@/app/core/utils/search.utils';
 import { RichTextEditorComponent } from '@/app/shared/components/rich-text-editor/rich-text-editor.component';
+import { RecipientPickerComponent } from '@/app/shared/components/recipient-picker/recipient-picker.component';
+import { AttachmentStripComponent, AttachmentAction } from '@/app/shared/components/attachment-strip/attachment-strip.component';
 
 import { CompanyDisplayComponent } from '@/app/shared/components/company-display/company-display.component';
 import { ParticipantService } from '@/app/core/services/participant.service';
+import { NotificationService } from '@/app/core/services/notification.service';
 
 @Component({
     selector: 'app-conversation-detail',
@@ -28,7 +34,7 @@ import { ParticipantService } from '@/app/core/services/participant.service';
         }
     `],
     template: `
-    <div *ngIf="!messageId" class="flex-1 flex flex-col items-center justify-center bg-white text-[#666] gap-4 h-full">
+    <div *ngIf="!messageId" class="flex-1 flex flex-col items-center justify-center bg-white text-unicredit-text-secondary gap-4 h-full">
       <!-- Empty State SVG -->
       <svg xmlns="http://www.w3.org/2000/svg" width="110" height="83" viewBox="0 0 110 83" fill="none">
          <path d="M80.5241 72.173H30.3591C28.5223 72.1727 26.7608 71.4429 25.462 70.1441C24.1632 68.8453 23.4334 67.0838 23.4331 65.247V14.811H102.866C104.703 14.811 106.465 15.5406 107.764 16.8395C109.063 18.1383 109.793 19.9 109.793 21.737V72.173H96.6831V82.303L80.5241 72.173Z" fill="#E5E5E5"/>
@@ -39,16 +45,16 @@ import { ParticipantService } from '@/app/core/services/participant.service';
 
     <div *ngIf="messageId && conversation" class="flex-1 bg-white flex flex-col min-w-0 h-full">
       <!-- Top Header Wrapper -->
-      <div class="border-b border-[#e6e6e6] flex flex-col">
+      <div class="border-b border-unicredit-gray flex flex-col">
         <!-- Main Header Row -->
         <div class="px-6 py-4 flex items-center justify-between">
             <div class="flex-1 min-w-0 pr-4">
-                <h2 class="text-xl font-bold text-[#262626] truncate" [title]="conversation.title">
+                <h2 class="text-xl font-bold text-unicredit-text truncate" [title]="conversation.title">
                     {{ conversation.title }}
                 </h2>
             </div>
             <div class="flex items-center gap-4">
-                <span class="text-sm text-[#666]">Updated: {{ conversation.lastUpdated }}</span>
+                <span class="text-sm text-unicredit-text-secondary">Updated: {{ conversation.lastUpdated }}</span>
                 
                 <!-- Participant List Dropdown -->
                 <div class="relative" clickOutside (clickOutside)="isMemberDropdownOpen = false">
@@ -56,20 +62,20 @@ import { ParticipantService } from '@/app/core/services/participant.service';
                         (click)="isMemberDropdownOpen = !isMemberDropdownOpen"
                         class="flex items-center gap-1 px-4 py-1.5 border rounded-[4px] transition-colors group outline-none"
                         [ngClass]="{
-                            'bg-[#e7f8fb] text-[#007a91] border-[#007a91]': hasParticipantMatch,
-                            'bg-[#f5f5f5] text-[#007a91] border-[#007a91]': isMemberDropdownOpen && !hasParticipantMatch,
-                            'border-[#262626] bg-[#f5f5f5] hover:bg-gray-100': !isMemberDropdownOpen && !hasParticipantMatch
+                            'bg-unicredit-primary-light text-unicredit-primary border-unicredit-primary': hasParticipantMatch,
+                            'bg-unicredit-gray-lighter text-unicredit-primary border-unicredit-primary': isMemberDropdownOpen && !hasParticipantMatch,
+                            'border-unicredit-text bg-unicredit-gray-lighter hover:bg-gray-100': !isMemberDropdownOpen && !hasParticipantMatch
                         }"
                     >
                         <app-icon name="participants" size="15" [isActive]="isMemberDropdownOpen || hasParticipantMatch"></app-icon>
-                        <span class="text-sm font-bold" [ngClass]="(isMemberDropdownOpen || hasParticipantMatch) ? 'text-[#007a91]' : 'text-[#262626]'">
+                        <span class="text-sm font-bold" [ngClass]="(isMemberDropdownOpen || hasParticipantMatch) ? 'text-unicredit-primary' : 'text-unicredit-text'">
                             {{ (conversation.participantsList || []).length }}
                         </span>
                     </button>
 
                     <!-- Member Popover -->
                     <div *ngIf="isMemberDropdownOpen" 
-                         class="absolute top-full right-0 mt-1 w-[240px] bg-white rounded-[4px] border border-[#262626] shadow-lg z-50 p-3 flex flex-col animate-slideDown">
+                         class="absolute top-full right-0 mt-1 w-[240px] bg-white rounded-[4px] border border-unicredit-text shadow-lg z-50 p-3 flex flex-col animate-slideDown">
                         <!-- Companies Label -->
                         <div class="w-full mb-2 flex justify-center">
                             <app-company-display
@@ -80,18 +86,18 @@ import { ParticipantService } from '@/app/core/services/participant.service';
                             ></app-company-display>
                         </div>
                         
-                        <div class="flex flex-col gap-2 w-full max-h-[216px] overflow-y-auto pr-1 hover-scrollbar">
+                        <div class="flex-1 overflow-y-auto pr-1 hover-scrollbar" style="max-height: 216px;">
                             <div *ngFor="let member of sortedParticipants" 
                                  class="flex items-center gap-2.5 w-full rounded py-1.5 px-3 transition-colors cursor-default relative group/ooo"
-                                 [ngClass]="isMemberOOO(member) ? 'bg-[#FCE4EC] hover:bg-[#F8BBD0]' : 'bg-[#f5f5f5] hover:bg-[#ebebeb]'"
+                                 [ngClass]="isMemberOOO(member) ? 'bg-unicredit-ooo-bg hover:bg-[#F8BBD0]' : 'bg-unicredit-gray-lighter hover:bg-[#ebebeb]'"
                                  [title]="isMemberOOO(member) ? 'Out of office: Returning ' + getMemberOOODate(member) : ''">
                                 <div class="shrink-0 flex items-center justify-center w-5 h-5">
                                     <app-icon [name]="getMemberIconName(member)" size="15"></app-icon>
                                 </div>
-                                <span class="text-[#262626] font-bold text-sm uppercase truncate flex-1 block" [innerHTML]="highlightMember(member)">
+                                <span class="text-unicredit-text font-bold text-sm uppercase truncate flex-1 block" [innerHTML]="highlightMember(member)">
                                 </span>
                                 <!-- OOO Icon -->
-                                <div *ngIf="isMemberOOO(member)" class="shrink-0 text-[#262626]">
+                                <div *ngIf="isMemberOOO(member)" class="shrink-0 text-unicredit-text">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                                         <polyline points="16 17 21 12 16 7"></polyline>
@@ -198,52 +204,14 @@ import { ParticipantService } from '@/app/core/services/participant.service';
                  </button>
 
                  <!-- PICKER POPOVER -->
-                 <div *ngIf="showMemberPicker" class="absolute top-full left-0 mt-2 w-[340px] bg-white shadow-2xl border border-[#ccc] rounded z-[100] flex flex-col h-[320px] animate-fadeIn">
-                       <!-- Header Search -->
-                       <div class="p-3 border-b border-[#eee]">
-                           <div class="relative">
-                               <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                               </div>
-                               <input [(ngModel)]="pickerSearchQuery" placeholder="Search" class="w-full pl-9 pr-3 py-2 border border-[#ccc] rounded text-sm outline-none focus:border-[#007a91] text-[#262626]">
-                           </div>
-                       </div>
-                       
-                       <!-- List -->
-                       <div class="flex-1 overflow-y-auto hover-scrollbar">
-                           <div *ngFor="let r of getFilteredPickerMembers()" 
-                                (click)="toggleMemberPickerSelection(r.name)"
-                                class="flex items-center gap-3 px-4 py-3 hover:bg-[#e7f8fb] cursor-pointer border-b border-[#f5f5f5] transition-colors">
-                               
-                               <!-- Checkbox Custom -->
-                               <div class="w-5 h-5 border border-[#262626] bg-white rounded flex items-center justify-center transition-all shrink-0">
-                                    <svg *ngIf="isMemberSelectedInPicker(r.name)" width="12" height="10" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M1 5L4.5 8.5L11 1.5" stroke="#007A91" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                                    </svg>
-                               </div>
-                               
-                               <!-- Icon -->
-                               <div class="shrink-0 mt-0.5">
-                                   <app-icon [name]="getMemberIconName(r.name)" size="18"></app-icon>
-                               </div>
-                               
-                               <!-- Name + Role -->
-                               <div class="text-sm text-[#262626] leading-tight flex-1">
-                                   <span class="font-bold mr-1">{{ r.name }}</span>
-                                   <span *ngIf="r.role" class="text-[#666] font-normal">| {{ r.role }}</span>
-                               </div>
-                           </div>
-                       </div>
-
-                       <!-- Footer -->
-                       <div class="p-4 border-t border-[#eee] flex items-center justify-between bg-white shrink-0">
-                           <button (click)="closeMemberPicker()" class="px-6 py-2 border border-[#262626] rounded text-[#262626] font-bold text-sm hover:bg-gray-50 uppercase transition-colors" style="font-family: 'UniCredit';">CANCEL</button>
-                           <div class="flex items-center gap-6">
-                               <span class="font-bold text-sm text-[#262626]">{{ tempSelectedMembers.size }} selected</span>
-                               <button (click)="applyMemberPickerSelection()" class="px-6 py-2 bg-[#007a91] rounded text-white font-bold text-sm hover:bg-[#006577] uppercase transition-colors shadow-md" style="font-family: 'UniCredit';">APPLY</button>
-                           </div>
-                       </div>
-                 </div>
+                 <app-recipient-picker
+                    *ngIf="showMemberPicker"
+                    [recipients]="allRecipients"
+                    [initialSelectedIds]="draftParticipantIds"
+                    (apply)="onMemberPickerApply($event)"
+                    (cancel)="showMemberPicker = false"
+                    class="absolute top-full left-0 mt-2 z-[100]"
+                 ></app-recipient-picker>
             </div>
             
             <div class="flex-1">
@@ -423,7 +391,7 @@ import { ParticipantService } from '@/app/core/services/participant.service';
                      class="flex w-full group relative"
                      [ngClass]="getIsOwn(item) ? 'justify-end' : 'justify-start'"
                 >
-                    <div class="max-w-[75%] border rounded p-3 transition-all cursor-pointer"
+                    <div class="max-w-[75%] border rounded p-3 transition-all"
                          [ngClass]="{
                             'bg-white border-[#007a91]': getIsOwn(item),
                             'bg-[#f5f5f5] border-[#909090]': !getIsOwn(item),
@@ -517,106 +485,18 @@ import { ParticipantService } from '@/app/core/services/participant.service';
                             </button>
                         </div>
 
-                        <div class="text-[#262626] leading-relaxed rich-text-content break-words whitespace-pre-wrap">
-                            <div [innerHTML]="highlightContent(getContent(item))"></div>
+                        <div class="text-[#262626] leading-relaxed rich-text-content break-words whitespace-pre-wrap cursor-text select-text">
+                            <div [innerHTML]="getContent(item) | highlightSearch:searchQuery"></div>
                         </div>
 
                         <!-- Attachments Section -->
-                        <div *ngIf="asMessage(item).attachments?.length" class="mt-3 flex flex-wrap gap-3 items-stretch">
-                            <!-- Visible Attachments (Limit 2) -->
-                            <ng-container *ngFor="let att of asMessage(item).attachments! | slice:0:2">
-                                <div class="flex items-center gap-3 p-2 rounded border border-[#CCC] bg-white min-w-[200px] max-w-[300px]">
-                                    <div class="shrink-0">
-                                        <app-icon [name]="att.category === 'image' ? 'file-image' : 'file-document'" size="16"></app-icon>
-                                    </div>
-                                    
-                                    <div class="flex flex-col min-w-0">
-                                        <span class="text-[#262626] font-bold text-sm uppercase truncate" 
-                                              [title]="att.name"
-                                              style="font-family: 'UniCredit'; line-height: normal;">
-                                            {{ att.name }}
-                                        </span>
-                                        <div class="flex items-center gap-2 text-[#262626] text-sm" 
-                                             style="font-family: 'UniCredit'; line-height: 24px;">
-                                            <span>{{ att.type }}</span>
-                                            <div class="w-px h-3 bg-[#ccc]"></div>
-                                            <span>{{ att.size }}</span>
-                                        </div>
-                                    </div>
-
-                                    <app-dropdown-menu class="ml-auto">
-                                         <button trigger class="p-1 hover:text-[#007a91] text-[#262626] outline-none transition-colors flex items-center justify-center h-8 w-8">
-                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" class="text-current" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-                                         </button>
-                                         <div items class="flex flex-col min-w-[130px] py-1">
-                                             <button class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 hover:text-[#007a91] text-left text-[#262626] w-full transition-colors outline-none cursor-pointer">
-                                                 <app-icon name="preview" size="16"></app-icon>
-                                                 <span class="text-xs font-bold uppercase">Preview</span>
-                                             </button>
-                                             <button class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 hover:text-[#007a91] text-left text-[#262626] w-full transition-colors outline-none cursor-pointer">
-                                                 <app-icon name="download" size="16"></app-icon>
-                                                 <span class="text-xs font-bold uppercase">Download</span>
-                                             </button>
-                                         </div>
-                                    </app-dropdown-menu>
-                                </div>
-                            </ng-container>
-
-                            <!-- Overflow Counter Card -->
-                            <div *ngIf="asMessage(item).attachments!.length > 2" class="relative flex">
-                                 <app-dropdown-menu position="auto" #overflowMenu [minWidth]="320" class="flex">
-                                     <button trigger class="flex items-center gap-2 p-2 rounded border border-[#CCC] bg-white group hover:border-[#007a91] transition-all h-full outline-none cursor-pointer">
-                                         <app-icon name="file-document" size="16"></app-icon>
-                                         <span class="font-bold text-[#262626] text-sm" style="font-family: 'UniCredit'">+{{ asMessage(item).attachments!.length - 2 }}</span>
-                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" 
-                                              class="transition-transform duration-300"
-                                              [ngClass]="{'rotate-180 text-[#007a91]': overflowMenu.isOpen, 'text-[#262626]': !overflowMenu.isOpen}"
-                                              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                              <path d="m6 9 6 6 6-6"/>
-                                         </svg>
-                                     </button>
-                                     <div items class="flex flex-col gap-2 p-2 w-[320px] max-h-[220px] overflow-y-auto hover-scrollbar">
-                                         <div *ngFor="let att of asMessage(item).attachments! | slice:2" 
-                                              class="flex items-center gap-3 p-2 rounded border border-[#CCC] bg-white w-full"
-                                         >
-                                             <div class="shrink-0">
-                                                 <app-icon [name]="att.category === 'image' ? 'file-image' : 'file-document'" size="16"></app-icon>
-                                             </div>
-                                             
-                                             <div class="flex flex-col min-w-0 flex-1">
-                                                 <span class="text-[#262626] font-bold text-sm uppercase truncate" 
-                                                       [title]="att.name"
-                                                       style="font-family: 'UniCredit'; line-height: normal;">
-                                                     {{ att.name }}
-                                                 </span>
-                                                 <div class="flex items-center gap-2 text-[#262626] text-sm" 
-                                                      style="font-family: 'UniCredit'; line-height: 24px;">
-                                                     <span>{{ att.type }}</span>
-                                                     <div class="w-px h-3 bg-[#ccc]"></div>
-                                                     <span>{{ att.size }}</span>
-                                                 </div>
-                                             </div>
-
-                                             <app-dropdown-menu>
-                                                  <button trigger class="p-1 hover:text-[#007a91] text-[#262626] outline-none transition-colors flex items-center justify-center h-8 w-8">
-                                                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" class="text-current" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-                                                  </button>
-                                                  <div items class="flex flex-col min-w-[130px] py-1">
-                                                      <button class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 hover:text-[#007a91] text-left text-[#262626] w-full transition-colors outline-none cursor-pointer">
-                                                          <app-icon name="preview" size="16"></app-icon>
-                                                          <span class="text-xs font-bold uppercase">Preview</span>
-                                                      </button>
-                                                      <button class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 hover:text-[#007a91] text-left text-[#262626] w-full transition-colors outline-none cursor-pointer">
-                                                          <app-icon name="download" size="16"></app-icon>
-                                                          <span class="text-xs font-bold uppercase">Download</span>
-                                                      </button>
-                                                  </div>
-                                             </app-dropdown-menu>
-                                         </div>
-                                     </div>
-                                 </app-dropdown-menu>
-                            </div>
-                        </div>
+                        <app-attachment-strip 
+                            *ngIf="asMessage(item).attachments?.length"
+                            [attachments]="asMessage(item).attachments || []" 
+                            [maxVisible]="2"
+                            class="mt-3 block"
+                            (action)="handleAttachmentAction($event)"
+                        ></app-attachment-strip>
                     </div>
                 </div>
 
@@ -670,7 +550,23 @@ import { ParticipantService } from '@/app/core/services/participant.service';
       </div>
 
       <!-- Composer -->
-      <div *ngIf="!conversation.isUserRemoved" class="border-t border-[#e6e6e6] bg-white">
+      <div *ngIf="!conversation.isUserRemoved" 
+           class="border-t border-[#e6e6e6] bg-white relative group"
+           (dragover)="onDragOver($event)"
+           (dragleave)="onDragLeave($event)"
+           (drop)="onDrop($event)">
+           
+           <input #fileInput type="file" multiple class="hidden" (change)="onFileSelected($event)">
+
+           <!-- Dropzone Overlay -->
+            <div *ngIf="isDragging" 
+                 class="absolute inset-0 z-50 bg-white/90 flex flex-col items-center justify-center border-2 border-dashed border-[#007a91] m-2 rounded"
+                 (dragover)="$event.preventDefault(); $event.stopPropagation()"
+                 (dragleave)="isDragging = false"
+                 (drop)="onDrop($event)">
+                <app-icon name="upload" size="48" class="text-[#007a91] mb-2 pointer-events-none"></app-icon>
+                <span class="text-[#007a91] font-bold text-lg pointer-events-none">Drop your files here</span>
+            </div>
           <!-- OOO Banner -->
           <div *ngIf="oooParticipants.length > 0 && !isEditMembersMode && !isOOOBannerDismissed" 
                class="flex items-center justify-between mx-4 mt-2 mb-1 animate-fadeIn"
@@ -701,22 +597,118 @@ import { ParticipantService } from '@/app/core/services/participant.service';
 
           <div class="p-4 pt-2">
           <div class="flex items-end gap-3 translate-y-[-2px]">
-             <app-rich-text-editor 
-                class="flex-1"
-                placeholder="Type your message or drag a document"
-                [content]="draftContent"
-                [replyTo]="replyingToMessage"
-                (enterPressed)="sendMessage()"
-                (contentChange)="handleDraftChange($event)"
-                (cancelReply)="cancelReply()"
-             ></app-rich-text-editor>
-             
-             <button (click)="sendMessage()" class="w-11 h-11 rounded-full bg-[#007a91] hover:bg-[#006577] flex items-center justify-center transition-all duration-200 ease-out shrink-0 mb-[2px] hover:scale-110 active:scale-95 shadow-md hover:shadow-lg">
-               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" class="text-white transition-transform duration-200 group-hover:translate-x-0.5">
-                  <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-               </svg>
-             </button>
+             <div class="flex-1 flex flex-col gap-3 min-w-0">
+                 <app-rich-text-editor 
+                    class="w-full"
+                    placeholder="Type your message or drag a document"
+                    [content]="draftContent"
+                    [replyTo]="replyingToMessage"
+                    (enterPressed)="sendMessage()"
+                    (contentChange)="handleDraftChange($event)"
+                    (cancelReply)="cancelReply()"
+                    (attachmentClick)="triggerFileSelection()"
+                 ></app-rich-text-editor>
+
+                 <!-- Composer Attachments List -->
+                 <div *ngIf="attachments.length > 0" class="flex flex-wrap gap-2 items-stretch">
+                     <ng-container *ngFor="let att of attachments | slice:0:2">
+                        <div class="flex items-center gap-3 p-2 rounded border border-[#CCC] bg-white min-w-[200px] max-w-[300px] relative">
+                            <!-- Helper for loading state if needed, mocked via uploadingFiles set -->
+                            <div *ngIf="uploadingFiles.has(att.id)" class="absolute inset-0 bg-white/60 flex items-center justify-center z-10">
+                                <div class="w-5 h-5 border-2 border-[#007a91] border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+
+                            <div class="shrink-0 text-[#262626]">
+                                <app-icon [name]="att.category === 'image' ? 'file-image' : 'file-document'" size="16"></app-icon>
+                            </div>
+                            
+                            <div class="flex flex-col min-w-0">
+                                <span class="text-[#262626] font-bold text-sm uppercase truncate" 
+                                      [title]="att.name"
+                                      style="font-family: 'UniCredit'; line-height: normal;">
+                                    {{ att.name }}
+                                </span>
+                                <div class="flex items-center gap-2 text-[#262626] text-sm" 
+                                     style="font-family: 'UniCredit'; line-height: 24px;">
+                                    <span>{{ att.type }}</span>
+                                    <div class="w-px h-3 bg-[#ccc]"></div>
+                                    <span>{{ att.size }}</span>
+                                </div>
+                            </div>
+
+                            <button (click)="removeAttachment(att.id)" 
+                                    class="ml-auto p-1 hover:text-[#ec6608] text-[#909090] transition-colors outline-none cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                     </ng-container>
+
+                     <!-- Overflow Counter -->
+                     <div *ngIf="attachments.length > 2" class="relative flex">
+                         <app-dropdown-menu position="top" #overflowComposerMenu [minWidth]="320" class="flex h-full">
+                             <button trigger class="flex items-center gap-2 p-2 rounded border border-[#CCC] bg-white group hover:border-[#007a91] transition-all h-full outline-none cursor-pointer">
+                                 <app-icon name="file-document" size="16"></app-icon>
+                                 <span class="font-bold text-[#262626] text-sm" style="font-family: 'UniCredit'">+{{ attachments.length - 2 }}</span>
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" 
+                                      class="transition-transform duration-300"
+                                      [ngClass]="{'rotate-180 text-[#007a91]': overflowComposerMenu.isOpen, 'text-[#262626]': !overflowComposerMenu.isOpen}"
+                                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                      <path d="m6 9 6 6 6-6"/>
+                                 </svg>
+                             </button>
+                             <div items class="flex flex-col gap-2 p-2 w-[320px] max-h-[220px] overflow-y-auto hover-scrollbar mb-2 shadow-xl border border-[#e6e6e6]">
+                                 <div *ngFor="let att of attachments | slice:2" 
+                                      class="flex items-center gap-3 p-2 rounded border border-[#CCC] bg-white w-full relative"
+                                 >
+                                      <!-- Helper for loading state -->
+                                    <div *ngIf="uploadingFiles.has(att.id)" class="absolute inset-0 bg-white/60 flex items-center justify-center z-10">
+                                        <div class="w-4 h-4 border-2 border-[#007a91] border-t-transparent rounded-full animate-spin"></div>
+                                    </div>
+
+                                     <div class="shrink-0 text-[#262626]">
+                                         <app-icon [name]="att.category === 'image' ? 'file-image' : 'file-document'" size="16"></app-icon>
+                                     </div>
+                                     
+                                     <div class="flex flex-col min-w-0 flex-1">
+                                         <span class="text-[#262626] font-bold text-sm uppercase truncate" 
+                                               [title]="att.name"
+                                               style="font-family: 'UniCredit'; line-height: normal;">
+                                             {{ att.name }}
+                                         </span>
+                                         <div class="flex items-center gap-2 text-[#262626] text-sm" 
+                                              style="font-family: 'UniCredit'; line-height: 24px;">
+                                             <span>{{ att.type }}</span>
+                                             <div class="w-px h-3 bg-[#ccc]"></div>
+                                             <span>{{ att.size }}</span>
+                                         </div>
+                                     </div>
+
+                                     <button (click)="removeAttachment(att.id)" 
+                                            class="ml-auto p-1 hover:text-[#ec6608] text-[#909090] transition-colors outline-none cursor-pointer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                    </button>
+                                 </div>
+                             </div>
+                         </app-dropdown-menu>
+                     </div>
+                 </div>
+             </div>
+              
+              <button (click)="sendMessage()" 
+                      [disabled]="uploadingFiles.size > 0"
+                      [ngClass]="{'opacity-50 cursor-not-allowed': uploadingFiles.size > 0}"
+                      class="w-11 h-11 rounded-full bg-[#007a91] hover:bg-[#006577] flex items-center justify-center transition-all duration-200 ease-out shrink-0 mb-[2px] active:scale-95 shadow-md hover:shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" class="text-white">
+                   <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                   <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
           </div>
       </div>
 
@@ -803,10 +795,18 @@ export class ConversationDetailComponent implements OnChanges, AfterViewChecked 
     replyingToMessage: ConversationMessage | null = null;
     isOOOBannerDismissed = false;
 
+    // Attachment State
+    isDragging = false;
+    attachments: Attachment[] = [];
+    uploadingFiles = new Set<string>(); // Set of names or IDs
+    @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
     constructor(
         private messagesService: MessagesService,
         private participantService: ParticipantService,
-        private router: Router
+        private router: Router,
+        private notificationService: NotificationService,
+        private sanitizer: DomSanitizer
     ) { }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -973,10 +973,7 @@ export class ConversationDetailComponent implements OnChanges, AfterViewChecked 
         return highlightText(text, this.searchQuery);
     }
 
-    highlightContent(content: string): string {
-        if (!this.searchQuery) return content;
-        return highlightText(content, this.searchQuery);
-    }
+
 
     scrollToMessage(id: string) {
         this.highlightedMessageId = id;
@@ -1021,13 +1018,15 @@ export class ConversationDetailComponent implements OnChanges, AfterViewChecked 
     }
 
     sendMessage() {
-        if (!this.draftContent || !this.draftContent.trim() || !this.conversation || !this.messageId) return;
+        if ((!this.draftContent || !this.draftContent.trim()) && this.attachments.length === 0) return;
+        if (!this.conversation || !this.messageId) return;
+        if (this.uploadingFiles.size > 0) return;
 
-        // Mock send
         const newMessage: ConversationMessage = {
             id: `msg-${Date.now()}`,
             sender: 'You',
             content: this.draftContent,
+            attachments: [...this.attachments],
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
             isOwn: true,
             isTodo: false,
@@ -1040,7 +1039,8 @@ export class ConversationDetailComponent implements OnChanges, AfterViewChecked 
         const id = this.messageId;
         this.draftContent = '';
         this.replyingToMessage = null;
-        this.messagesService.setDraft(id!, '');
+        this.messagesService.setDraft(id, '');
+        this.attachments = [];
 
         if (this.richTextEditor) {
             this.richTextEditor.clear();
@@ -1063,6 +1063,109 @@ export class ConversationDetailComponent implements OnChanges, AfterViewChecked 
 
     cancelReply() {
         this.replyingToMessage = null;
+    }
+
+    // Attachment Handlers
+    triggerFileSelection() {
+        this.fileInput.nativeElement.click();
+    }
+
+    onFileSelected(event: Event) {
+        const input = event.target as HTMLInputElement;
+        if (input.files) {
+            this.processFiles(input.files);
+        }
+        input.value = ''; // Reset
+    }
+
+    processFiles(fileList: FileList) {
+        const files = Array.from(fileList);
+        const MAX_SIZE = 20 * 1024 * 1024; // 20MB
+        let hasError = false;
+
+        files.forEach(file => {
+            if (file.size > MAX_SIZE) {
+                hasError = true;
+                return;
+            }
+
+            // Allowed types: PDF, DOC/DOCX, XLS/XLSX, TXT, images
+            // In a real app we'd validate MIME types strictly. For now, we accept all valid size files per requirements.
+
+            const attachment: Attachment = {
+                id: `att-${Date.now()}-${file.name}`,
+                name: file.name,
+                type: file.name.split('.').pop()?.toUpperCase() || 'FILE',
+                size: this.formatBytes(file.size),
+                category: file.type.startsWith('image/') ? 'image' : 'document',
+                url: URL.createObjectURL(file) // Mock URL for local preview logic if needed
+            };
+
+            // Simulate Upload
+            this.uploadingFiles.add(attachment.id);
+            this.attachments.push(attachment);
+
+            // Mock Upload Delay
+            setTimeout(() => {
+                this.uploadingFiles.delete(attachment.id);
+            }, 1000 + Math.random() * 2000);
+        });
+
+        if (hasError) {
+            this.notificationService.showError(
+                'You have exceeded the maximum size.',
+                'The maximum size for attachments is 20MB.'
+            );
+        }
+    }
+
+    removeAttachment(id: string) {
+        this.attachments = this.attachments.filter(a => a.id !== id);
+        this.uploadingFiles.delete(id);
+    }
+
+    onDragOver(event: DragEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.dataTransfer) {
+            event.dataTransfer.dropEffect = 'copy';
+            this.isDragging = true;
+        }
+    }
+
+    onDragLeave(event: DragEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        // Only disable if leaving the main container
+        const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+        if (
+            event.clientX <= rect.left ||
+            event.clientX >= rect.right ||
+            event.clientY <= rect.top ||
+            event.clientY >= rect.bottom
+        ) {
+            this.isDragging = false;
+        }
+    }
+
+    onDrop(event: DragEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.isDragging = false;
+
+        if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+            this.processFiles(event.dataTransfer.files);
+        }
+    }
+
+    private formatBytes(bytes: number, decimals = 2) {
+        if (!+bytes) return '0 B';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
     }
 
     toggleReplyExpand(message: ConversationMessage) {
@@ -1268,45 +1371,39 @@ export class ConversationDetailComponent implements OnChanges, AfterViewChecked 
     }
 
     // Member Picker Logic
+    // Member Picker Logic
     showMemberPicker = false;
-    pickerSearchQuery = '';
-    tempSelectedMembers = new Set<string>();
 
     toggleMemberPicker() {
         this.showMemberPicker = !this.showMemberPicker;
-        if (this.showMemberPicker) {
-            this.pickerSearchQuery = '';
-            this.tempSelectedMembers = new Set(this.draftParticipants);
-        }
     }
 
-    isMemberSelectedInPicker(name: string): boolean {
-        return this.tempSelectedMembers.has(name);
+    get allRecipients(): Recipient[] {
+        return mockRecipients;
     }
 
-    toggleMemberPickerSelection(name: string) {
-        if (this.tempSelectedMembers.has(name)) {
-            this.tempSelectedMembers.delete(name);
-        } else {
-            this.tempSelectedMembers.add(name);
-        }
+    get draftParticipantIds(): string[] {
+        // Convert names to IDs
+        return this.draftParticipants
+            .map(name => mockRecipients.find(r => r.name === name)?.id)
+            .filter(id => !!id) as string[];
     }
 
-    getFilteredPickerMembers() {
-        const query = this.pickerSearchQuery.toLowerCase();
-        return mockRecipients.filter(r =>
-            !query ||
-            r.name.toLowerCase().includes(query) ||
-            r.role.toLowerCase().includes(query)
-        );
-    }
+    onMemberPickerApply(selectedIds: string[]) {
+        // Convert IDs back to names (because current logic uses names)
+        const selectedNames = selectedIds
+            .map(id => mockRecipients.find(r => r.id === id)?.name)
+            .filter(name => !!name) as string[];
 
-    applyMemberPickerSelection() {
-        this.draftParticipants = Array.from(this.tempSelectedMembers);
+        // Update draft participants, preserving ones that might not be in mockRecipients (if any)
+        // But for now, we assume mockRecipients is the source of truth for the picker.
+        // To be safe, we can union with existing ones that didn't match an ID? 
+        // No, the picker is authoritative for the selection set.
+        this.draftParticipants = selectedNames;
         this.showMemberPicker = false;
     }
 
-    closeMemberPicker() {
-        this.showMemberPicker = false;
+    handleAttachmentAction(event: AttachmentAction) {
+        console.log('Attachment action:', event.type, event.attachment);
     }
 }

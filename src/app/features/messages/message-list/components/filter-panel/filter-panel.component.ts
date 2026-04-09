@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from '@/app/shared/shared.module';
 import { CheckboxComponent } from '@/app/shared/components/checkbox/checkbox.component';
-import { companies, members } from '@/app/core/mock/filter.data';
+import { companies, members } from '@/app/core/data/filter.mock';
 import { FilterOptions } from '@/app/core/models';
 
 @Component({
@@ -12,8 +12,8 @@ import { FilterOptions } from '@/app/core/models';
     template: `
      <div 
         class="w-[42px] h-[24px] rounded-full relative cursor-pointer transition-colors"
-        [class.bg-[#262626]]="checked"
-        [class.bg-[#e6e6e6]]="!checked"
+        [class.bg-unicredit-text]="checked"
+        [class.bg-unicredit-gray]="!checked"
         (click)="toggle()"
      >
         <div 
@@ -43,17 +43,17 @@ export class SwitchComponent {
       <div class="flex-1 overflow-y-auto px-4 py-2 hover-scrollbar">
          
          <!-- Company and Member Section -->
-         <div class="border-b border-[#e6e6e6]">
+         <div class="border-b border-unicredit-gray">
             <button 
                 class="flex items-center justify-between w-full py-4 rounded group outline-none"
                 (click)="toggleSection('company-member')"
             >
-                <span class="font-bold text-[#262626] text-base group-hover:text-[#007a91]" [class.text-[#007a91]]="openSection === 'company-member'">
+                <span class="font-bold text-unicredit-text text-base group-hover:text-unicredit-primary" [class.text-unicredit-primary]="openSection === 'company-member'">
                     Company and member
                 </span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" 
-                     class="transition-transform duration-300 group-hover:text-[#007a91]" 
-                     [ngClass]="{'rotate-180 text-[#007a91]': openSection === 'company-member', 'text-[#666]': openSection !== 'company-member'}"
+                     class="transition-transform duration-300 group-hover:text-unicredit-primary" 
+                     [ngClass]="{'rotate-180 text-unicredit-primary': openSection === 'company-member', 'text-unicredit-text-secondary': openSection !== 'company-member'}"
                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                      <path d="m6 9 6 6 6-6"/>
                 </svg>
@@ -65,19 +65,19 @@ export class SwitchComponent {
                 <div class="relative" clickOutside (clickOutside)="isCompanyOpen = false">
                     <div 
                         (click)="isCompanyOpen = !isCompanyOpen"
-                        class="flex items-center justify-between px-3 py-2 border rounded bg-white cursor-pointer hover:border-[#007a91]"
-                        [ngClass]="{'border-[#007a91]': isCompanyOpen, 'border-[#ccc]': !isCompanyOpen}"
+                        class="flex items-center justify-between px-3 py-2 border rounded bg-white cursor-pointer hover:border-unicredit-primary"
+                        [ngClass]="{'border-unicredit-primary': isCompanyOpen, 'border-unicredit-gray-divider': !isCompanyOpen}"
                     >
-                        <span class="text-sm truncate" [ngClass]="selectedCompanies.length > 0 ? 'text-[#262626]' : 'text-[#666]'">
+                        <span class="text-sm truncate" [ngClass]="selectedCompanies.length > 0 ? 'text-unicredit-text' : 'text-unicredit-text-secondary'">
                             {{ selectedCompanies.length > 0 ? selectedCompanies.length + ' companies selected' : 'Select company' }}
                         </span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" class="text-[#666]" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" class="text-unicredit-text-secondary" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                     </div>
 
                     <!-- Company Popover -->
-                    <div *ngIf="isCompanyOpen" class="absolute top-full left-0 mt-1 w-full bg-white rounded shadow-lg border border-[#e6e6e6] p-2 z-50">
-                        <div class="flex items-center px-2 py-1.5 border border-[#ccc] rounded mb-2">
-                             <app-icon name="search" size="14" class="mr-2 text-[#666]"></app-icon>
+                    <div *ngIf="isCompanyOpen" class="absolute top-full left-0 mt-1 w-full bg-white rounded shadow-lg border border-unicredit-gray p-2 z-50">
+                        <div class="flex items-center px-2 py-1.5 border border-unicredit-gray-divider rounded mb-2">
+                             <app-icon name="search" size="14" class="mr-2 text-unicredit-text-secondary"></app-icon>
                              <input 
                                 class="flex-1 text-sm outline-none" 
                                 placeholder="Search" 
@@ -89,12 +89,12 @@ export class SwitchComponent {
                         <div class="max-h-[200px] overflow-y-auto flex flex-col hover-scrollbar">
                             <div *ngFor="let company of filteredCompanies" 
                                  (click)="toggleCompany(company)"
-                                 class="flex items-center gap-2 px-2 py-2 hover:bg-[#e7f8fb] rounded cursor-pointer"
+                                 class="flex items-center gap-2 px-2 py-2 hover:bg-unicredit-primary-light rounded cursor-pointer"
                             >
                                 <div class="pointer-events-none">
                                     <app-checkbox [checked]="isCompanySelected(company)"></app-checkbox>
                                 </div>
-                                <span class="text-sm text-[#262626]">{{ company }}</span>
+                                <span class="text-sm text-unicredit-text">{{ company }}</span>
                             </div>
                         </div>
                     </div>
@@ -104,19 +104,19 @@ export class SwitchComponent {
                 <div class="relative" clickOutside (clickOutside)="isMemberOpen = false">
                     <div 
                         (click)="isMemberOpen = !isMemberOpen"
-                        class="flex items-center justify-between px-3 py-2 border rounded bg-white cursor-pointer hover:border-[#007a91]"
-                        [ngClass]="{'border-[#007a91]': isMemberOpen, 'border-[#ccc]': !isMemberOpen}"
+                        class="flex items-center justify-between px-3 py-2 border rounded bg-white cursor-pointer hover:border-unicredit-primary"
+                        [ngClass]="{'border-unicredit-primary': isMemberOpen, 'border-unicredit-gray-divider': !isMemberOpen}"
                     >
-                        <span class="text-sm truncate" [ngClass]="selectedMembers.length > 0 ? 'text-[#262626]' : 'text-[#666]'">
+                        <span class="text-sm truncate" [ngClass]="selectedMembers.length > 0 ? 'text-unicredit-text' : 'text-unicredit-text-secondary'">
                              {{ selectedMembers.length > 0 ? 'Select member (' + selectedMembers.length + ')' : 'Select member' }}
                         </span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" class="text-[#666]" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" class="text-unicredit-text-secondary" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                     </div>
 
                      <!-- Member Popover -->
-                    <div *ngIf="isMemberOpen" class="absolute top-full left-0 mt-1 w-full bg-white rounded shadow-lg border border-[#e6e6e6] p-2 z-50">
-                        <div class="flex items-center px-2 py-1.5 border border-[#ccc] rounded mb-2">
-                             <app-icon name="search" size="14" class="mr-2 text-[#666]"></app-icon>
+                    <div *ngIf="isMemberOpen" class="absolute top-full left-0 mt-1 w-full bg-white rounded shadow-lg border border-unicredit-gray p-2 z-50">
+                        <div class="flex items-center px-2 py-1.5 border border-unicredit-gray-divider rounded mb-2">
+                             <app-icon name="search" size="14" class="mr-2 text-unicredit-text-secondary"></app-icon>
                              <input 
                                 class="flex-1 text-sm outline-none" 
                                 placeholder="Search" 
@@ -128,22 +128,22 @@ export class SwitchComponent {
                         <div class="max-h-[200px] overflow-y-auto flex flex-col gap-1 hover-scrollbar">
                              <div *ngFor="let member of filteredMembers" 
                                  (click)="toggleMember(member.id)" 
-                                 class="flex items-start gap-2 px-2 py-2 hover:bg-[#e7f8fb] rounded cursor-pointer"
+                                 class="flex items-start gap-2 px-2 py-2 hover:bg-unicredit-primary-light rounded cursor-pointer"
                             >
                                 <div class="pointer-events-none mt-0.5">
                                     <app-checkbox [checked]="isMemberSelected(member.id)"></app-checkbox>
                                 </div>
                                  <div class="flex flex-col">
-                                     <div class="flex items-center gap-1.5 font-bold text-[#262626]">
+                                     <div class="flex items-center gap-1.5 font-bold text-unicredit-text">
                                          <app-icon [name]="member.type === 'banker' ? 'member-bank' : 'member-client'" size="16"></app-icon>
                                          <span class="text-sm">{{ member.name }}</span>
                                      </div>
-                                     <span class="text-xs text-[#666] ml-5">
+                                     <span class="text-xs text-unicredit-text-secondary ml-5">
                                          {{ member.type === 'client' ? member.company : (member.company + ' | ' + member.role) }}
                                      </span>
                                  </div>
                              </div>
-                             <div *ngIf="filteredMembers.length === 0" class="px-2 py-2 text-sm text-[#666] text-center">
+                             <div *ngIf="filteredMembers.length === 0" class="px-2 py-2 text-sm text-unicredit-text-secondary text-center">
                                 No members found
                              </div>
                         </div>
@@ -154,42 +154,42 @@ export class SwitchComponent {
          </div>
 
          <!-- Time Period -->
-         <div class="border-b border-[#e6e6e6]">
+         <div class="border-b border-unicredit-gray">
             <button 
                 class="flex items-center justify-between w-full py-4 rounded group outline-none"
                 (click)="toggleSection('time-period')"
             >
-                <span class="font-bold text-[#262626] text-base group-hover:text-[#007a91]" [class.text-[#007a91]]="openSection === 'time-period'">
+                <span class="font-bold text-unicredit-text text-base group-hover:text-unicredit-primary" [class.text-unicredit-primary]="openSection === 'time-period'">
                     Time period
                 </span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" 
-                     class="transition-transform duration-300 group-hover:text-[#007a91]" 
-                     [ngClass]="{'rotate-180 text-[#007a91]': openSection === 'time-period', 'text-[#666]': openSection !== 'time-period'}"
+                     class="transition-transform duration-300 group-hover:text-unicredit-primary" 
+                     [ngClass]="{'rotate-180 text-unicredit-primary': openSection === 'time-period', 'text-unicredit-text-secondary': openSection !== 'time-period'}"
                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                      <path d="m6 9 6 6 6-6"/>
                 </svg>
             </button>
             <div *ngIf="openSection === 'time-period'" class="pt-2 pb-4 flex flex-col gap-2">
                  <div class="flex items-center gap-2">
-                    <input type="date" [ngModel]="fromDate" (ngModelChange)="fromDate = $event" class="flex-1 p-2 border border-[#ccc] rounded text-sm focus:border-[#007a91] outline-none">
-                    <span class="text-[#666]">-</span>
-                    <input type="date" [ngModel]="toDate" (ngModelChange)="toDate = $event" class="flex-1 p-2 border border-[#ccc] rounded text-sm focus:border-[#007a91] outline-none">
+                    <input type="date" [ngModel]="fromDate" (ngModelChange)="fromDate = $event" class="flex-1 p-2 border border-unicredit-gray-divider rounded text-sm focus:border-unicredit-primary outline-none">
+                    <span class="text-unicredit-text-secondary">-</span>
+                    <input type="date" [ngModel]="toDate" (ngModelChange)="toDate = $event" class="flex-1 p-2 border border-unicredit-gray-divider rounded text-sm focus:border-unicredit-primary outline-none">
                  </div>
             </div>
          </div>
         
           <!-- Toggles -->
           <div class="flex flex-col mt-2">
-             <div class="flex items-center justify-between py-4 border-b border-[#e6e6e6]">
-                  <span class="font-bold text-[#262626]">Unread</span>
+             <div class="flex items-center justify-between py-4 border-b border-unicredit-gray">
+                  <span class="font-bold text-unicredit-text">Unread</span>
                   <app-switch [checked]="unread" (checkedChange)="unread = $event"></app-switch>
              </div>
-             <div class="flex items-center justify-between py-4 border-b border-[#e6e6e6]">
-                  <span class="font-bold text-[#262626]">To-do</span>
+             <div class="flex items-center justify-between py-4 border-b border-unicredit-gray">
+                  <span class="font-bold text-unicredit-text">To-do</span>
                   <app-switch [checked]="todo" (checkedChange)="todo = $event"></app-switch>
              </div>
-             <div class="flex items-center justify-between py-4 border-b border-[#e6e6e6]">
-                  <span class="font-bold text-[#262626]">Attachments</span>
+             <div class="flex items-center justify-between py-4 border-b border-unicredit-gray">
+                  <span class="font-bold text-unicredit-text">Attachments</span>
                   <app-switch [checked]="attachments" (checkedChange)="attachments = $event"></app-switch>
              </div>
          </div>
@@ -197,11 +197,11 @@ export class SwitchComponent {
       </div>
 
       <!-- Footer -->
-      <div class="p-4 border-t border-[#e6e6e6] flex items-center justify-between bg-white mt-auto">
-          <button (click)="onCancel.emit()" class="px-4 py-2 border border-[#262626] rounded text-[#262626] font-bold text-sm uppercase hover:bg-[#f5f5f5]">
+      <div class="p-4 border-t border-unicredit-gray flex items-center justify-between bg-white mt-auto">
+          <button (click)="onCancel.emit()" class="btn-secondary !px-4 !py-2">
               Cancel
           </button>
-          <button (click)="applyFilters()" class="px-4 py-2 bg-[#007a91] rounded text-white font-bold text-sm uppercase hover:bg-[#006577]">
+          <button (click)="applyFilters()" class="btn-primary !px-4 !py-2">
               Apply
           </button>
       </div>
